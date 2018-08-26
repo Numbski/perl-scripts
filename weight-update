@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+
+use strict;
+use RRD::Simple;
+use RRDTool::OO;
+
+my $rrd = RRDTool::OO->new(
+	file => "/home/shadwickt/Desktop/rrd-test/new-weight.rrd"
+);
+my $rrd_simple = RRD::Simple->new(
+	file => "/home/shadwickt/Desktop/rrd-test/new-weight.rrd"
+);
+
+my($weight,$bfp) = (shift,shift);
+
+die("Please enter weight and body fat percentage!") unless ($weight and $bfp); 
+die("I sincerely doubt you are more than 100% body fat.") if ($bfp > 100);
+
+if($bfp > 1){
+	print "Converting $bfp to be a fraction.\n";
+	$bfp = $bfp * .01;
+	print "Body fat percentage is $bfp.\n"
+}
+
+my $lean = $weight - ($bfp*$weight);
+
+print "Weight: $weight\nLean: $lean\nFat: ". ($weight-$lean)."\n";
+$rrd->update(
+	'time' => time(),
+	'values' => {
+		'weight' => $weight,
+		'lean' => $lean,
+	},
+);
+
+# Return information about an RRD file
+my $info = $rrd_simple->info;
+require Data::Dumper;
+print Data::Dumper::Dumper($info);
+
+ # Get unixtime of when RRD file was last updated
+my $lastUpdated = $rrd_simple->last;
+print "new-weight.rrd was last updated at " .
+      scalar(localtime($lastUpdated)) . "\n";
+ 
+ # Get list of data source names from an RRD file
+my @dsnames = $rrd_simple->sources;
+print "Available data sources: " . join(", ", @dsnames) . "\n";

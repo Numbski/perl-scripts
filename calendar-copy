@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+use strict;
+use File::Copy;
+
+my $source_folder = '/media/MOBILEHOME/ThinkingRock/var/Calendars';
+my $destination_folder = '/var/www/Calendars';
+
+my @calendars = (
+	'ThinkingRock.ics',
+	'ThinkingRockProjects.ics',
+	'ThinkingRockFutureProjects.ics',
+);
+
+foreach my $calendar(@calendars){
+	if(-f "$source_folder/$calendar"){
+		copy("$source_folder/$calendar","$destination_folder/$calendar");
+		chown(0,0,"$destination_folder/$calendar");
+	}
+}

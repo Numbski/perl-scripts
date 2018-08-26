@@ -1,0 +1,50 @@
+' This/These macro(s) implement the procedure for different folders
+Sub MoveSelectedMessagesToArchive()
+    MoveSelectedMessagesToFolder ("2010")
+End Sub
+
+' This macro does the heavy lifting, and is only called from another VBA procedure
+Sub MoveSelectedMessagesToFolder(FolderName As String)
+
+'On Error Resume Next
+    Dim objFolder As Outlook.MAPIFolder, objInbox As Outlook.MAPIFolder
+    Dim objNS As Outlook.NameSpace, objItem As Outlook.MailItem
+
+    Set objNS = Application.GetNamespace("MAPI")
+    Set objInbox = objNS.GetDefaultFolder(olFolderInbox)
+    Set objFolder = objInbox.Folders(FolderName)
+
+'Assume this is a mail folder
+
+    If objFolder Is Nothing Then
+        MsgBox "This folder doesn't exist!", vbOKOnly + vbExclamation, "INVALID FOLDER"
+    End If
+
+    If Application.ActiveExplorer.Selection.Count = 0 Then
+        'Require that this procedure be called only when a message is selected
+        Exit Sub
+    End If
+
+	If Application.ActiveExplorer.Selection(1).Class = 43 Then
+    ' 43 is the literal constant for a mail item
+    ' sometimes a calendar item is in the inbox, in which case there is a type
+    ' conflict with the objItem variable, which is declared as a mail item.
+
+       For Each objItem In Application.ActiveExplorer.Selection
+           If objFolder.DefaultItemType = olMailItem Then
+               If objItem.Class = olMail Then
+                    objItem.UnRead = False
+                    objItem.Move objFolder
+               End If
+           End If
+       Next
+    Else
+        MsgBox ("This is not a message; it may be a calendar request")
+    End If
+
+    Set objItem = Nothing
+    Set objFolder = Nothing
+    Set objInbox = Nothing
+    Set objNS = Nothing
+
+End Sub

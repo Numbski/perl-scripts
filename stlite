@@ -1,0 +1,347 @@
+#!/usr/bin/perl -w
+
+# Copyright (c) 2003 University of Utah and the Flux Group.
+# All rights reserved.
+# 
+# Permission to use, copy, modify, distribute, and sell this software
+# and its documentation is hereby granted without fee, provided that the
+# above copyright notice and this permission/disclaimer notice is
+# retained in all copies or modified versions, and that both notices
+# appear in supporting documentation.  THE COPYRIGHT HOLDERS PROVIDE
+# THIS SOFTWARE "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE COPYRIGHT
+# HOLDERS DISCLAIM ANY LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER
+# RESULTING FROM THE USE OF THIS SOFTWARE.
+# 
+# Users are requested, but not required, to send to csl-dist@cs.utah.edu
+# any improvements that they make and grant redistribution rights to the
+# University of Utah.
+# 
+# Author: John Regehr (regehr@cs.utah.edu)
+
+use strict;
+
+my $ORIGIN = 0;
+# my $ORIGIN = hex("3c00");
+
+# atmega163
+my $NUM_VECTORS = 18;
+
+# atmega103
+# my $NUM_VECTORS = 24;
+
+# atmega128
+# my $NUM_VECTORS = 35;
+
+# should be same for all ATmegas
+my $VEC_SIZE = 4;
+my $PC_SIZE = 2;
+
+my %addrs;
+my %insns;
+my %args;
+my %labels;
+my %vectors;
+my $linenum = 0;
+my %lines;
+my %line_to_addr;
+
+sub insn_size ($) {
+    my $addr = shift;
+    my $insn = $insns{$addr};
+
+    return 4 if ($insn eq "call" || $insn eq "jmp" || $insn eq "sts" || $insn eq "lds");    
+
+    return 2;
+}
+
+sub is_branch ($) {
+    my $addr = shift;
+
+    return ($insns{$addr} eq "breq" || $insns{$addr} eq "brge" || $insns{$addr} eq "brne" ||
+		     $insns{$addr} eq "brcs" || $insns{$addr} eq "brcc" || $insns{$addr} eq "brlt" ||
+		     $insns{$addr} eq "brhc" || $insns{$addr} eq "brhs" || $insns{$addr} eq "brid" ||
+		     $insns{$addr} eq "brie" || $insns{$addr} eq "brmi" || $insns{$addr} eq "brpl" ||
+		     $insns{$addr} eq "brtc" || $insns{$addr} eq "brts" || $insns{$addr} eq "brvc" ||
+		     $insns{$addr} eq "brvs" || $insns{$addr} eq "brbc" || $insns{$addr} eq "brbs");
+}
+
+sub is_skip ($) {
+    my $addr = shift;
+
+    return ($insns{$addr} eq "sbrs" || $insns{$addr} eq "sbrc" || $insns{$addr} eq "cpse" ||
+		     $insns{$addr} eq "sbic" || $insns{$addr} eq "sbis");
+}
+
+sub is_fallthrough ($) {
+    my $addr = shift;
+
+    return ($insns{$addr} eq "adc" || $insns{$addr} eq "add" || $insns{$addr} eq "adiw" ||
+		     $insns{$addr} eq "and" || $insns{$addr} eq "andi" || $insns{$addr} eq "asr" ||
+		     $insns{$addr} eq "bld" || $insns{$addr} eq "break" || $insns{$addr} eq "bst" ||
+		     $insns{$addr} eq "cbi" || $insns{$addr} eq "clh" || $insns{$addr} eq "cli" ||
+		     $insns{$addr} eq "cln" || $insns{$addr} eq "cls" || $insns{$addr} eq "clt" ||
+		     $insns{$addr} eq "clv" || $insns{$addr} eq "clz" || $insns{$addr} eq "com" ||
+		     $insns{$addr} eq "cp" || $insns{$addr} eq "cpc" || $insns{$addr} eq "cpi" ||
+		     $insns{$addr} eq "dec" || $insns{$addr} eq "elpm" || $insns{$addr} eq "eor" ||
+		     $insns{$addr} eq "fmul" || $insns{$addr} eq "fmuls" || $insns{$addr} eq "fmulsu" ||
+		     $insns{$addr} eq "in" || $insns{$addr} eq "inc" || $insns{$addr} eq "ldi" ||
+		     $insns{$addr} eq "lpm" || $insns{$addr} eq "lsr" || $insns{$addr} eq "mov" ||
+		     $insns{$addr} eq "movw" || $insns{$addr} eq "mul" || $insns{$addr} eq "muls" ||
+		     $insns{$addr} eq "mulsu" || $insns{$addr} eq "neg" || $insns{$addr} eq "nop" ||
+		     $insns{$addr} eq "or" || $insns{$addr} eq "ori" || $insns{$addr} eq "out" ||
+		     $insns{$addr} eq "pop" || $insns{$addr} eq "push" || $insns{$addr} eq "ror" ||
+		     $insns{$addr} eq "sbc" || $insns{$addr} eq "sbci" || $insns{$addr} eq "sbi" ||
+		     $insns{$addr} eq "sbiw" || $insns{$addr} eq "seh" || $insns{$addr} eq "sei" ||
+		     $insns{$addr} eq "sen" || $insns{$addr} eq "ses" || $insns{$addr} eq "set" ||
+		     $insns{$addr} eq "sev" || $insns{$addr} eq "sez" || $insns{$addr} eq "sleep" ||
+		     $insns{$addr} eq "spm" || $insns{$addr} eq "sub" || $insns{$addr} eq "subi" ||
+		     $insns{$addr} eq "swap" || $insns{$addr} eq "wdr" || $insns{$addr} eq "ld" ||
+		     $insns{$addr} eq "ldd" || $insns{$addr} eq "sec" || $insns{$addr} eq "st" ||
+		     $insns{$addr} eq "std" || $insns{$addr} eq "lds" || $insns{$addr} eq "sts");
+}
+
+sub is_jmp ($) {
+    my $addr = shift;
+
+    return ($insns{$addr} eq "jmp" || $insns{$addr} eq "rjmp");
+}
+
+sub is_call ($) {
+    my $addr = shift;
+
+    return ($insns{$addr} eq "call" || $insns{$addr} eq "rcall");
+}
+
+sub get_rel ($) {
+    my $addr = shift;
+    my $code = $args{$addr};
+    die if (!($code =~ /.(\-?[0-9]+)/));
+    return 2+$1;
+}
+
+sub get_target ($) {
+    my $addr = shift;
+    
+    if (is_jmp ($addr) ||
+		 is_call ($addr)) {
+		 if ($insns{$addr} eq "rjmp") {
+		     return $addr + get_rel ($addr);
+		 } else {
+		     my $code = $args{$addr};
+		     die if (!($code =~ /0x([0-9a-f]+)/));
+		     return hex ($1);
+		 }
+    }
+
+    if (is_branch ($addr)) {
+		 return $addr + get_rel ($addr);
+    }
+
+    # skip size depends on size of subsequent insn
+    if (is_skip ($addr)) {
+		 my $next = $addr + insn_size ($addr);
+		 return $next + insn_size ($next);
+    }
+
+    die;
+}
+ 
+sub disassemble ($) {
+    my $fn = shift;
+    open INF, "avr-objdump -d $fn |" or die "can't open input file $fn";
+    
+    while (my $line = <INF>) {
+		 chomp $line;
+
+		 $linenum++;
+		 $lines{$linenum} = $line;
+
+		 # skip first few lines, they're junk
+		 next if ($linenum <= 4);
+
+		 # skip blank lines
+		 next if ($line eq "");
+		 
+		 # kill comments
+		 ($line =~ s/\s*;.*$//);
+
+		 # print "$line\n";
+
+		 if ($line =~ /^0*([0-9a-f]+) <(.+)>:$/) {
+		     $labels{$1} = $2;
+		     next;
+		 }
+		 
+		 if ($line =~ /^\s+([0-9a-f]+):\s+([0-9a-f][0-9a-f]\s)+\s*(.*)$/) {
+		     my $addr = hex($1);
+		     my $code = $3;
+
+		     $line_to_addr{$linenum} = $addr;
+
+		     die if (!($code =~ /^([\.a-zA-Z]+)\s*(.*)?$/));
+		     my $insn = $1;
+		     my $arg = $2;
+		     $insns{$addr} = $insn;
+		     $args{$addr} = $arg;
+		     $addrs{$addr} = 1;
+
+		     if (($addr-$ORIGIN >= 0) &&
+		 		 (($addr-$ORIGIN) / $VEC_SIZE) < $NUM_VECTORS) {
+		 		 $vectors{$addr} = $addr;
+		 		 # print "found vector at address $addr\n";
+		     }
+		     
+		     next;
+		 }
+		 
+		 # paranoid: don't ignore lines that look funny
+		 print "oops -- can't understand '$line'\n";
+		 exit;
+    }
+
+    print "parsed:\n";
+    print "  ".scalar(keys %labels)." labels\n";
+    print "  ".scalar(keys %insns)." instructions\n";
+    
+    close INF;
+}
+
+sub max ($$) {
+    (my $a, my $b) = @_;
+
+    if (!defined ($a)) { return $b; }
+    if (!defined ($b)) { return $a; }
+
+    if ($a > $b) {
+		 return $a;
+    } else {
+		 return $b;
+    }
+}
+
+sub stack_effect ($) {
+    my $addr = shift;
+
+    return 1 if ($insns{$addr} eq "push");
+    return -1 if ($insns{$addr} eq "pop");
+
+    return $PC_SIZE if is_call ($addr);
+    return -$PC_SIZE if ($insns{$addr} eq "ret" || $insns{$addr} eq "reti");
+
+    die "indirect control transfer not supported!" if ($insns{$addr} eq "icall" ||
+		 		 		 		 		 		        $insns{$addr} eq "eicall" ||
+		 		 		 		 		 		        $insns{$addr} eq "ijmp" ||
+		 		 		 		 		 		        $insns{$addr} eq "eijmp");
+
+    return 0;
+}
+
+my %depths;
+
+sub compute_stack {
+    # $addr is the address of the current instruction
+    # $vec is the name of the interrupt vector we're currently looking at
+    # $old_depth is the stack depth before executing this instruction
+    (my $addr, my $vec, my $old_depth) = @_;
+
+    die if (!defined $addr);
+    die if (!defined $vec);
+    die if (!defined $old_depth);
+
+    if (!defined($insns{$addr})) {
+        print "hmmm: we don't have an instruction at address $addr\n";
+		 exit;
+    }
+
+    # compute new depth
+    my $new_depth = $old_depth + stack_effect ($addr);
+
+    # termination condition 1
+    return if (defined($depths{$vec}{$addr}) && $depths{$vec}{$addr} >= $new_depth);
+
+    # printf "addr = %x, old_depth = %d, insn = %s\n", $addr, $old_depth, $insns{$addr};
+
+    # record new depth
+    $depths{$vec}{$addr} = $new_depth;
+
+    # termination condition 2 -- jump to origin resets the program
+    return if (is_jmp ($addr) && get_target ($addr) == $ORIGIN);
+
+    # termination condition 3 -- ret and reti don't go anywhere in our simple model    
+    return if ($insns{$addr} eq "ret" || $insns{$addr} eq "reti");
+
+    if (is_call ($addr) || is_branch ($addr) || is_skip ($addr) || is_jmp ($addr)) {
+		 compute_stack (get_target ($addr), $vec, $new_depth);
+    }
+
+    if (is_call ($addr)) {
+		 compute_stack ($addr + insn_size ($addr), $vec, $old_depth);
+    } elsif (!is_jmp ($addr)) {
+		 compute_stack ($addr + insn_size ($addr), $vec, $new_depth);
+    }
+}
+
+sub bynum {
+    return $a <=> $b;
+}
+
+sub dump_code {
+    foreach my $linenum (sort bynum keys %lines) {
+		 my $addr = $line_to_addr{$linenum};
+		 if (defined ($addr)) {
+		     my $depth;
+		     foreach my $vec (sort bynum keys %vectors) {
+		 		 $depth = max ($depth, $depths{$vec}{$addr});
+		     }
+		     if (defined ($depth)) {
+		 		 print "$depth ";
+		     }
+		 }
+		 print "$lines{$linenum}\n";
+    }
+}
+
+########################## main() ##############################
+
+if (scalar(@ARGV) < 1) {
+    print "usage: ./lite avr_file\n";
+    exit;
+}
+
+disassemble ($ARGV[0]);
+
+my %vec_stack;
+
+{
+    my $vec_found = scalar (keys %vectors);
+    if ($vec_found != $NUM_VECTORS) {
+		 print "Hmm... was expecting ${NUM_VECTORS} interrupt vectors but found ${vec_found}\n";
+		 exit;
+    }
+}
+
+foreach my $vec (sort bynum keys %vectors) {
+    my $init_stack;
+
+    if ($vec eq "0") {
+		 $init_stack = 0;
+    } else {
+		 $init_stack = $PC_SIZE;
+    }
+
+    compute_stack ($vec, $vec, $init_stack);
+    my $depth = 0;
+    foreach my $addr (keys %addrs) {
+		 if (defined ($depths{$vec}{$addr})) {
+		     $depth = max ($depth, $depths{$vec}{$addr});
+		 }
+    }
+    $vec_stack{$vec} = $depth;
+    print "vector ".($vec/$VEC_SIZE).": ${vec_stack{$vec}}\n" unless ($vec_stack{$vec} == $PC_SIZE);
+}
+
+# dump_code ();
+
+

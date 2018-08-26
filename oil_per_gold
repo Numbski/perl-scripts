@@ -1,0 +1,77 @@
+#!/usr/bin/env perl
+
+use LWP::Simple;
+use XML::Twig;
+use Math::Round qw( nearest );
+
+my $debugging;
+
+my $oil_2009 = 53.92;
+my $gold_2009 = 972.35;
+
+print "Fetching Finance page.\n" if $debugging;
+my $content = get("http://finance.yahoo.com/");
+die("Couldn't get it!") unless defined $content;
+print "Done fetching, beginning parse.\n" if $debugging;
+
+my $twig = XML::Twig->new( index => ['table'])
+					->safe_parse_html($content);
+my $tables_ref = $twig->index('table');
+
+my @tables = @$tables_ref;
+
+my $market_summary_table;
+TABLE:
+foreach my $table(@tables){
+	if ($table->{'att'}->{'id'} eq 'market_summary_us_accordion'){
+		$market_summary_table = $table;
+		last TABLE;
+	}
+	else{
+		print "Nope, that's not what I want.  This is ".$table->{'att'}->{'id'}."\n";
+	}
+}
+
+my @rows = $market_summary_table->children('tr');
+my %market_summary;
+foreach my $row(@rows){
+	my @cells = $row->children('td');
+	$market_summary->{lc($cells[0]->text)}->{'price'} = $cells[1]->text if($cells[0] && $cells[1]);
+	$market_summary->{lc($cells[0]->text)}->{'price'} =~ s/,//g;
+	$market_summary->{lc($cells[0]->text)}->{'change'} = $cells[2]->text if($cells[0] && $cells[2]);
+	$market_summary->{lc($cells[0]->text)}->{'change'} =~ s/,//g;
+	$market_summary->{lc($cells[0]->text)}->{'change_percentage'} = $cells[3]->text if($cells[0] && $cells[3]);
+}
+
+#print "One Barrel of Oil:\t".$market_summary->{'oil'}->{'price'}." ($market_summary->{'oil'}->{'change'})\n";
+#print "One Ounce of Gold:\t".$market_summary->{'gold'}->{'price'}." ($market_summary->{'gold'}->{'change'})\n";
+my $oil_per_gold = $market_summary->{'gold'}->{'price'}/$market_summary->{'oil'}->{'price'};
+#print "Barrels of Oil per Ounce of Gold:  ".nearest(.01,$oil_per_gold)."\n";
+if($oil_per_gold >= 15.562){
+#	print "Either oil is cheap, or gold is expensive. (Possibly both.)\n";
+}
+else{
+#	print "Either gold is cheap, or oil is expensive. (Possibly both.)\n";
+}
+
+
+my $oil_change_since_2009 = $market_summary->{'oil'}->{'price'}/$oil_2009;
+my $gold_change_since_2009 = $market_summary->{'gold'}->{'price'}/$gold_2009;
+
+if($oil_change_since_2009 > 1){
+	$oil_change_since_2009 = nearest(.01,($oil_change_since_2009 - 1) * 100);
+}
+else{
+	$oil_change_since_2009 = (nearest(.01,(1 - $oil_change_since_2009) - 1) * 100);
+}
+
+if($gold_change_since_2009 > 1){
+	$gold_change_since_2009 = nearest(.01,($gold_change_since_2009 - 1) * 100);
+}
+else{
+	$gold_change_since_2009 = (nearest(.01,(1 - $gold_change_since_2009) - 1) * 100);
+}
+
+print "Since 2009, oil has changed $oil_change_since_2009% and gold has changed $gold_change_since_2009%.\n";
+
+print "On average, since 1946 1oz of gold will buy appromixately 15.5 barrels of oil.\n";

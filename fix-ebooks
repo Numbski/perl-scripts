@@ -1,0 +1,138 @@
+#!/usr/bin/env perl -w
+
+use strict;
+use XML::Twig;
+use Text::Wrap qw(wrap $columns fill);
+#use Text::Aspell;
+
+my $columns = 132;
+my $tabstop = 4;
+
+my $file = shift or die("You need to pass in an html file!");
+
+my $file_contents;
+
+open F, $file or die("Can't open $file : $!");
+while(<F>) {
+	$file_contents .= $_;	
+}
+
+close(F);
+
+print "Fixing double line-breaks.\n";
+# Replace all double line-breaks with paragraph tags, insert newlines too.
+$file_contents =~ s/\s*<BR><BR>\s*/<\/p>\n\n<p>/g;
+
+print "Shortening paragraph tags\n";
+$file_contents =~ s/(<P .+?>)/<p>/g;
+
+print "Cleaning out unneeded body attributes\n";
+$file_contents =~ s/<BODY .*?>/<body>/g;
+
+print "Lower-casing tags.\n";
+# Lower case all tags.
+$file_contents =~ s/(<\/*\w+>)/\L$1\E/g;
+
+print "Clearing extent line-breaks.\n";
+# Remove any straggling line break tags.
+$file_contents =~ s/\s*<br>\s*/ /ig;
+
+print "Clearing out horizontal rules.\n";
+$file_contents =~ s/\s*<hr\s*\/+>\s*/ /ig;
+
+print "Removing needless newlines prior to closing paragraph tags.\n";
+$file_contents =~ s/\s*\n+<\/p>\n*/<\/p>\n\n/g;
+
+print "Removing needless META tags\n";
+$file_contents =~ s/<META .*?>\n+//g;
+
+print "Removing non-breaking-space tags.\n";
+$file_contents =~ s/\s*\&nbsp;\s*/ /g;
+
+print "Removing extent anchors.\n";
+$file_contents =~ s/<a name.*>.*<\/a>//ig;
+
+print "Removing empty paragraphs.\n";
+$file_contents =~ s/\n+<p>\s*<\/p>\n+/\n/ig;
+
+print "Cleaning out spaces from the body's end.\n";
+$file_contents =~ s/\s*\n+\s*<\/body>/\n<\/body>/ig;
+
+print "Collapsing excessive whitespace.\n";
+$file_contents =~ s/\s+/ /g;
+
+print "Inserting sane line breaks.\n";
+$file_contents =~ s/\s*<\/p>\s*\n*\s*/<\/p>\n\n/ig;
+$file_contents =~ s/\s*<br \/>\s*\n*\s*/<br \/>\n/g;
+
+# Parse as a twig.
+my $twig= XML::Twig->new(
+                pretty_print => 'indented',
+                empty_tags => 'html',
+	);
+$twig->parse_html($file_contents);
+my $root = $twig->root;
+
+my $body = $root->first_child( 'body' );
+my @paragraphs = $body->children('p');
+my $total_paragraphs = scalar(@paragraphs);
+
+my $count = 0;
+#my $paragraph = $body->first_child( 'p' );
+
+while($body = $body->next_elt('p') ){
+	#foreach(keys %{$body}){
+	#	print "$_\n";
+	#}
+
+	my $paragraph = $body->inner_xml;
+	$paragraph =~ s/\n/ /g;
+
+	# Clean up the line wrapping.
+	$paragraph = wrap("","",$paragraph);
+	
+	# Give proper spacing at the end of sentences.
+	$paragraph =~ s/\. /\.  /g;
+	$paragraph =~ s/\? /\.  /g;
+	$paragraph =~ s/\! /\.  /g;
+
+#	print "Spell checking paragraph $count of $total_paragraphs.\n";
+
+	# Spell check the paragraph.
+ #   my $speller = Text::Aspell->new;
+ #   die unless $speller;
+ #   $speller->set_option('lang','en_US');
+ #   $speller->set_option('sug-mode','fast');
+
+#	my %seen;
+#    while ( $paragraph =~ /(['\w]+)/g ) { # add apos back
+#        my $word = $1;
+#        next if $seen{$word}++;
+#        unless ( $speller->check( $word ) ) {
+#            my @sug = $speller->suggest( $word ); 
+           # Five is plenty
+#            @sug = splice(@sug,0,6) if @sug > 6;
+            
+#            print "$word appears to be misspelled.\n";
+#		}
+#	}
+
+#	print $paragraph;
+#	print "\n";
+
+	$body->set_inner_xml($paragraph);	
+
+#	print "#############\n\n";
+	$count++;
+}
+#print "$count paragraphs\n";
+
+# Write out well-formed XML.
+$twig->print_to_file("$file",
+                pretty_print => 'nice',
+                empty_tags => 'html',
+                comments => 'keep',
+
+	);
+
+

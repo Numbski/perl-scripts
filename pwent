@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+use User::pwent qw(:FIELDS);
+
+my $username = shift or die("No username given!");
+
+my $user = getpwnam($username) or die("No such user $username");
+
+print "Username: ".$user->name."\n";
+print "Real Name: ".$user->gecos."\n";
+print "Home: ".$user->dir."\n";
+print "uid: ".$user->uid."\n";
+print "gid: ".$user->gid."\n";
+print "passwd: ".$user->passwd."\n";

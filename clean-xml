@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use XML::Twig;
+#use Text::Wrap qw(wrap $columns fill);
+
+my $file = shift or die("You need to pass in an xml file!");
+
+# Parse as a twig.
+my $twig= XML::Twig->new(
+                comments => 'keep',
+	);
+
+$twig->safe_parsefile($file);
+my $root = $twig->root;
+
+# Write out well-formed XML.
+$twig->print_to_file("$file",
+                pretty_print => 'indented',
+	);
+
+

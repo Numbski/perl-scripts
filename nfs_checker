@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+
+use strict;
+use Proc::Daemon;
+use Sys::Syslog qw(
+			:DEFAULT
+			setlogsock
+		);
+my $nfs_path = '/private/Network/Servers/nas1.oss-solutions.com/mnt/home/tshadwick';
+
+
+print "Starting up...\n";
+openlog('nfs_checker',"ndelay,nowait","local0");
+syslog("info", "Starting up...");
+closelog();
+
+Proc::Daemon::Init;
+
+while(1){
+	openlog('nfs_checker',"ndelay,nowait","local0");
+	opendir DIR, $nfs_path or syslog("info", "Can't open directory $nfs_path: $!");	
+	my @files = grep !/^\./,readdir(DIR);
+	syslog("info", scalar(@files)." files in $nfs_path");
+	closelog();
+	sleep(60);
+}
+

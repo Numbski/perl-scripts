@@ -1,0 +1,130 @@
+ this file code is found under:   /var/ipfire/ovpn
+
+# This simply tells you what/where the interpreter is.
+# If you are concern about this box being compromised, might
+# not be a bad idea to get a checksum of what this should be.
+# Just in case. --numbski
+#!/usr/bin/perl
+
+
+############################################################################
+#                                                                          #
+# This file is part of the IPFire Firewall.                                #
+#                                                                          #
+# IPFire is free software; you can redistribute it and/or modify           #
+# it under the terms of the GNU General Public License as published by     #
+# the Free Software Foundation; either version 2 of the License, or        #
+# (at your option) any later version.                                      #
+#                                                                          #
+# IPFire is distributed in the hope that it will be useful,                #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of           #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            #
+# GNU General Public License for more details.                             #
+#                                                                          #
+# You should have received a copy of the GNU General Public License        #
+# along with IPFire; if not, write to the Free Software                    #
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA #
+#                                                                          #
+# Copyright (C) 2013 IPFire Team <info@ipfire.org>.                        #
+#                                                                          #
+############################################################################
+
+# I really need this other file.  It isn't part of the bid I made, mind
+# you, but this "require" statement is pulling in functions from other bits 
+# of code. --numbski
+require '/var/ipfire/general-functions.pl';
+
+# These are command line arguments passed in when this is called.
+# So in this case, if the script name were "script", it would look
+# like this:
+# ./script DEPTH CN
+# Then $DEPTH would literally be 'DEPTH' and $CN literally 'CN'.
+# ./script FOO BAR
+# $DEPTH would become 'FOO' and $CN would become 'BAR'. --numbski
+my $DEPTH = $ARGV[0];
+my $CN    = $ARGV[1];
+
+
+# Exit immediately for every certificate depth other than 0.
+# Just as it says.  If the first argument given isn't '0' (literally)
+# We're going to exit nicely without an error code.  --numbski
+exit 0 unless ($DEPTH eq "0");
+
+# Strip the CN from the X509 identifier.
+# This is running what's called a "regular expressino" against the second 
+# argument.  If it looked like this:
+# 'CN=Tony Shadwick', the first line matches 'Tony Shadwick', and perl
+# automatically assigns that to the special variable $1.  The second line
+# then copies 'Tony Shadwick' to the variable $CN, so now instead of it
+# being the long string, it is just what was matched in the first line.
+# --numbski
+$CN =~ /\/CN=(.*)$/i;
+$CN = $1;
+
+# Creates an empty hash for use later.
+# --numbski
+my %confighash = ();
+
+ # If the file exists at this path.  Note that I cannot tell you where
+ # ${General::swroot} is located, as that is a variable defined in that
+ # included file I told you about.  You can probably run:
+ # `locate ovpnconfig` to find it though!
+ # --numbski
+if (-f "${General::swroot}/ovpn/ovpnconfig"){
+
+        # A function defined in that included script.  I can't tell you exactly
+        # what it does, but I can make an educated guess.  It opens the file
+        # 'ovpnconfig', parses it, and then stuff the values from that file
+        # into that %confighash we defined above so we can use it below.
+        # --numbski
+	&General::readhasharray("${General::swroot}/ovpn/ovpnconfig", \%confighash);
+
+
+        # We are going to iterate through that hash, value-by-value, going
+        # by the key.
+        # --numbski
+	foreach my $key (keys %confighash) {
+
+                # Pull the CN out of the config file. --numbski      
+		my $cn = $confighash{$key}[2];
+
+		# Skip disabled connections.
+                # Basically, if this value says 'on', go to the next key
+                # in the confighash.  Stop processing here.  --numbski
+		next unless ($confighash{$key}[0] eq "on");
+
+		# Skip non-roadwarrior connections.
+                # Looks to me like we are trying to parse a literal openvpn
+                # config file.  This directive states that we aren't a server.
+                # --numbski
+		next unless ($confighash{$key}[3] eq "host");
+
+		# Search for a matching CN.
+                # We are checking to see if the CN passed in on the command line
+                # matches what we found in the config file.
+                # If it *does* match, we exit nicely with no error code.
+                # --numbski
+		exit 0 if ($cn eq $CN);
+
+		# Compatibility code for incorrectly saved CNs.
+                # Another regular expression.  This time, we're searching the
+                # cn from the config file for a literal space (badly coded)
+                # and if we find one, we replace it with an underscore. --numbski
+		$cn =~ s/\ /_/g;
+
+                # Again, see if it now matches what was passed on the command line.
+                # If so, exit nicely with no error code.  --numbski
+		exit 0 if ($cn eq $CN);
+	}
+}
+
+# Return an error if ovpnconfig could not be found.
+# This comment is odd.  The script is wrong here.  It should be inside of
+# an else{} statement.  Just the same, yes - we exit with error code "1" if
+# we reach this point in the code, but unless I see it wrong, you'll 
+# always get here. --numbski
+exit 1;
+
+# In my opinion, nothing is being executed here.  It is simply
+# reading a config file and checking some options, but I would need
+# to see that other included script to be certain! --numbski

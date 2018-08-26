@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+
+my $bin = '/usr/bin/rdesktop';
+my $host = 'vms-stl-01';
+my $socket = "$ENV{'HOME'}/.rdesktop/seamless.socket";
+my $shell = 'C:\seamlessrdp2\seamlessrdpshell.exe';
+
+if (@ARGV != 1) {
+    print "usage: windows \n";
+    exit;
+}
+
+# if socket and master session exist,
+# launch command in slave mode
+$numprocs = `pgrep -U $ENV{'USER'} -x rdesktop | wc -l`;
+if (-e $socket and ($numprocs == 1)) {
+    exec($bin, '-M', $socket, '-l', $ARGV[0]);
+# otherwise, start new master mode
+# only if no other sessions running
+} elsif ($numprocs == 0) {
+    exec ($bin, '-A', '-s', $shell . " $ARGV[0]", '-d', 'GKNSTL', '-u', 'shadwickt', '-p', 'gkn4oss2600!!!', $host);
+}
+

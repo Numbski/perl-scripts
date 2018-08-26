@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+use Net::DNS;
+
+my $ip = shift or die("No IP Address Provided!");
+
+$ip =~ /(\d+)\.(\d+)\.(\d+)\.(\d+)/;
+my $host = "$4.$3.$2.$1.dnsbl.allgknmail.mx";
+
+my $res   = Net::DNS::Resolver->new;
+my $query = $res->query($host, "TXT");
+  
+
+  if ($query) {
+      foreach my $rr ($query->answer) {
+          #next unless $rr->type eq "SRV";
+          print $rr->address, "\n";
+      }
+  } else {
+      warn "query failed: ", $res->errorstring, "\n";
+  }
+
+

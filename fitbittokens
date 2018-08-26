@@ -1,0 +1,7 @@
+my $params =
+[
+'oauth_consumer_key' => '3f7661c5e85d4e61821d5d4503753bd4',
+'oauth_consumer_secret' => 'cbb04dd0b755489f9378e8be12217e41',
+'oauth_token_secret' => '0d921e3f2a4cfa179c078705d9cd96e8',
+'oauth_verifier' => '2ii9khp1q733388r1bqv7n6q0t',
+];

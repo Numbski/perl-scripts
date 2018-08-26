@@ -1,0 +1,17 @@
+table, th, td {
+ border: 1px solid black;
+}
+td {
+ font-weight: bold;
+ height: 20px;
+ text-align: center;
+ width: 0px;
+ padding-left: 7px;
+ padding-right: 7px;
+}
+.x {
+ background: green;
+}
+.o {
+ background: red;
+}

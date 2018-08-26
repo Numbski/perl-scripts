@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+
+use strict;
+use LWP::UserAgent;
+use HTTP::Cookies;
+
+my $silent = 0;
+my @test_numbers;
+
+foreach(@ARGV){
+	if(/silent/ig){
+		$silent = 1;
+	}
+	elsif(/(\d{10})/){
+		push(@test_numbers,$1);
+	}
+	else{
+		die("Unrecognized parameter: $_");
+	}
+}
+die("You need to pass a valid phone number in the format 1NXXNXXXXXX") if !@test_numbers;
+
+my $username = "704800";
+my $password = "7ba27d5b33";
+
+# Create our global UserAgent.
+my $ua = new LWP::UserAgent;
+my $cookies = HTTP::Cookies->new; 	# Create a cookie jar
+$ua->cookie_jar($cookies);	# Enable cookies
+$ua->agent("DIDX Tester - http://www.oss-solutions.com");
+if($ENV{http_proxy}){ 
+		my $ua->proxy(['http'] =>"$ENV{http_proxy}");
+}
+
+
+login_to_didx();
+
+foreach(@test_numbers){
+	print "Beginning Test on $_.  This usually takes a bit, please be patient.\n" if $silent != 1;
+	test($_);
+}
+
+sub login_to_didx{
+		print "Attempting to Login to DIDx.\n" unless $silent == 1;
+	  	my $response = $ua->get("http://www.didx.net/cgi-bin/virtual/LoginAction.cgi?UID=$username&Pass=$password");
+		if ($response->is_success) {
+			my $results_page = $response->content;
+			if($results_page =~ /Login \s*successful. Please wait/ig){
+				print "Login Successful.\n" unless $silent == 1;
+			}
+			else{
+				die("Failed to login to DIDx!");
+			}
+		}
+		else{
+			die($response->status_line);
+		}
+}
+
+sub test{
+	my $test_number = shift;
+	my $response = $ua->get("http://www.didx.net/cgi-bin/virtual/TestPurchased.cgi?DID=1$test_number");
+	if ($response->is_success) {
+		my $results_page = $response->content;
+		if($results_page =~ /$test_number is tested successfully/){
+			print "Test on $test_number passed!\n" unless $silent == 1;
+		}
+		else{
+			print "Test on $test_number failed!  An e-mail should follow shortly...\n" unless $silent == 1;
+		}
+	}
+	else{
+		die($response->status_line);
+	}
+}

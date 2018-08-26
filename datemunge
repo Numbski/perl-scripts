@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+my $start = 'July 28, 2014';
+
+$start =~ m/(\w+?) (\d+?), (20\d\d)/;
+
+my $month = $1;
+my $day = $2;
+my $year = $3;
+
+
+my %months = (
+  'January' => 1,
+  'February'=> 2,
+  'March'=> 3,
+  'April'=> 4,
+  'May'=> 5,
+  'June'=> 6,
+  'July'=> 7,
+  'August'=> 8,
+  'September'=> 9,
+  'October'=> 10,
+  'November'=> 11,
+  'December'=> 12,
+);
+
+#print "$year-$months{$month}-$day\n";
+printf '%04s-%02s-%02s', $year, $months{$month}, $day;

@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+
+use Net::DNS;
+my $res   = Net::DNS::Resolver->new(
+);
+#	'nameservers' => [ qw(ns1-auth.sprintlink.net) ],
+
+my $query = $res->query("gknstl.com","SRV");
+
+
+if ($query) {
+#	print "Query returned.\n";
+#	print $query->answer."\n";
+	foreach my $rr ($query->answer) {
+#		$rr->print;
+#		print "\n";
+#        	next unless $rr->type eq "SRV";
+		$rr->print;
+		print "\n";
+	}
+}
+else {
+	warn "query failed: ", $res->errorstring, "\n";
+}
+
+

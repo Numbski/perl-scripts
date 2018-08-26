@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+use strict;
+
+print 1/0;

@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+use Mail::IMAPClient;
+
+my $imap = Mail::IMAPClient->new(  
+	'Server' => 'mail.gknstl.com',
+	'User'    => 'shadwickt',
+	'Password'=> 'gkn4oss2600!!!',
+	'Folder' => 'INBOX',
+        )  or die("Cannot auth to mail server: $@");
+
+# Close the inbox.
+$imap->close();
+
+# Exit the session.
+$imap->logout();

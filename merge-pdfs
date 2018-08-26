@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+use strict;
+
+die('Usage: merge-pdfs (outfile) (infile1) (infile2) [(infile3) (infile4)...]') unless scalar(@ARGV) > 3;
+
+my $outfile = shift(@ARGV);
+
+my @infiles;
+foreach my $infile(@ARGV){
+	next if (($infile eq '.') or ($infile eq '..'));
+	die("Your input file $infile does not exist!") unless -f $infile;
+	push(@infiles , "'$infile'");	
+}
+
+print "Running: env gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=$outfile -dBATCH @infiles\n";
+my $output = `env gs -dNOPAUSE -sDEVICE=pdfwrite -sOUTPUTFILE=$outfile -dBATCH @infiles`;

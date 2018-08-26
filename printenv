@@ -1,0 +1,6 @@
+#!/usr/bin/env perl
+use strict;
+
+foreach my $key(sort keys %ENV){
+	print "$key: $ENV{$key}\n";
+}

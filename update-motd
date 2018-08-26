@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use POSIX;
+use Sys::Info;
+use Sys::Info::Constants qw( :device_cpu );
+my $info = Sys::Info->new;
+my $cpu  = $info->device( CPU => my %options );
+print keys %options;
+# Update MOTD with useful stuff.
+# similar to Ubuntu's, only cheaper. :)
+
+foreach my $part(POSIX::uname()){
+	print "$part ";
+}
+print "\n\n";
+print "Welcome to Darwin!\n\n";
+print "  System information as of ".scalar(localtime())."\n\n";
+print "  System load:  ".$cpu->load()."              Processes:           310\n";
+
+   printf "CPU: %s\n", scalar($cpu->identify)  || 'N/A';
+   printf "CPU speed is %s MHz\n", $cpu->speed || 'N/A';
+   printf "There are %d CPUs\n"  , $cpu->count || 1;
+   printf "CPU load: %s\n"       , $cpu->load  || 0;

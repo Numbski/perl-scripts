@@ -1,0 +1,6 @@
+#!/usr/bin/env perl
+use strict;
+use Glib;
+my $name = Glib::get_real_name;
+#my @name = Glib::get_any_init;
+print "$name\n";

@@ -1,0 +1,52 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use WWW::Mechanize;
+use HTTP::Cookies;
+use Data::Dumper;
+
+my($phoneNumber,$message) = @ARGV;
+die('usage: sms [phone number] [quoted message text]') unless $phoneNumber && $message;
+
+my $m = WWW::Mechanize->new( 
+  'autocheck' => 1, 
+  'agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0',
+  'cookie_jar' => HTTP::Cookies->new( 
+    'file' => '/Users/tshadwick/.cookies.txt',
+    'autosave' => 1,
+  ),
+);
+
+$m->get("https://www.google.com/voice");
+$m->content =~ /<input name="_rnr_se" type="hidden" value="(.*?)"/;
+die("No rnr found.\n") unless $1;
+my $rnr_se = $1;
+#print "_rnr_se: $rnr_se\n";
+
+#$m->get("https://www.google.com/voice/b/0/sms/send?id=&phoneNumber=13142211473&_rnr_se=$1&text=test");
+$m->post(
+  'https://www.google.com/voice/b/0/sms/send',
+  [
+    'id' => undef,
+    'phoneNumber' => $phoneNumber,
+    'text' => $message,
+    '_rnr_se' => $rnr_se,
+  ],
+);
+die("SMS Send Failed!: ".$m->content) unless $m->content =~ /"ok":true/;
+#print $m->content;
+exit;
+
+$m->form_name('gaia_loginform');
+$m->field('Email','numbski@gmail.com');
+$m->field('Passwd','slipup77');
+$m->submit();
+
+$m->form_name('verifyForm');
+$m->field('smsUserPin','895031');
+$m->submit();
+
+$m->form_name('hiddenpost');
+$m->submit();
+
+print $m->content;

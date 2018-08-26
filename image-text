@@ -1,0 +1,57 @@
+#!/usr/bin/env perl
+
+use strict;
+use utf8;
+use File::Copy;
+$ENV{'PATH'} = $ENV{'PATH'}.':/usr/local/bin';
+
+# Can't just use this because of the PATH issue.
+# Hazel doesn't have it in PATH, so we put it there.
+eval
+{
+  require Image::OCR::Tesseract;
+  Image::OCR::Tesseract->import();
+};
+
+unless($@)
+{
+ my $file = shift(@ARGV);
+ # Handle the tempfile so we don't accidentally trigger Hazel.
+  my $time = time();
+  my $tempfile = "/var/tmp/tesseract-$time.jpg";
+  copy($file,$tempfile) or die("Copy failed: $!");
+  my $output = Image::OCR::Tesseract::get_ocr($tempfile);
+  die('No Tesseract Output!') unless $output;
+  unlink($tempfile);
+
+  # Remove leading whitespace and newlines.
+  $output =~ s/^(\n|\s)+//;
+
+  # Remove trailing newlines and whitespace.
+  $output =~ s/(\n|\s)+$//;
+
+# Remove all newlines
+  $output =~ s/\n/ /g;
+
+# Replace / with -
+  $output =~ s/\//-/g;
+
+# Replace newlines with |
+  $output =~ s/\n/|/g;
+
+  # Remove non-ascii characters.
+  $output =~ s/[^[:ascii:]]//g;
+
+  # Remove quotes and commas.
+  $output =~ s/(\'|\"|\,)//g;
+
+  # Remove redirect operators.
+  $output =~ s/(\<|\>)//g;
+
+  # Remove pound signs
+  $output =~ s/\#//g;
+
+  utf8::encode($output);
+  print $output;
+}
+exit;

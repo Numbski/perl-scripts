@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+use strict;
+
+my @array;
+
+$array[0] = 'foo';
+$array[23] = 'bar';
+
+
+print $#array."\n";
+print scalar(@array)."\n";

@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+use strict;
+$ENV{'PATH'} = $ENV{'PATH'}.':/usr/local/bin';
+use File::Copy;
+my $log = '/Users/tshadwick/.hazel.log';
+eval
+{
+  require Image::OCR::Tesseract;
+  Image::OCR::Tesseract->import();
+};
+
+unless($@)
+{
+  my $time = time();
+  my $tempfile = "/var/tmp/hazel-$time.jpg";
+  copy($ARGV[0],$tempfile) or die("Copy failed: $!");
+  my $output = Image::OCR::Tesseract::get_ocr($tempfile);
+  unlink($tempfile);
+  $output =~ m#((\d\d?)(/|-)(\d\d?)(/|-)((20)?\d\d))#g;
+  exit(255) unless $1;
+  exit(0);
+}
+else {
+ exit(255);
+};

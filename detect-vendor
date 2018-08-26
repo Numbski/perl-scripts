@@ -1,0 +1,70 @@
+#!/usr/bin/env perl
+
+use strict;
+use File::Copy;
+$ENV{'PATH'} = $ENV{'PATH'}.':/usr/local/bin';
+
+# Can't just use this because of the PATH issue.
+# Hazel doesn't have it in PATH, so we put it there.
+eval
+{
+  require Image::OCR::Tesseract;
+  Image::OCR::Tesseract->import();
+};
+
+unless($@)
+{
+ my $file = shift(@ARGV);
+ # Handle the tempfile so we don't accidentally trigger Hazel.
+  my $time = time();
+  my $tempfile = "/var/tmp/tesseract-$time.jpg";
+  copy($file,$tempfile) or die("Copy failed: $!");
+  my $ocr_text = Image::OCR::Tesseract::get_ocr($tempfile);
+  unlink($tempfile);
+
+  print $ocr_text;
+
+  my %date_pattern = (
+    'mmddyyyy' => qr/(\d\d?)(\/|-)(\d\d?)(\/|-)((20)?\d\d)/,
+    'dd_mon_yyyy' => qr/(\d\d?) (\w+),?\s+((20)?\d\d)/,
+    'mon_dd_yyyy' => qr/(\w+) (\d\d?),?\s+((20)?\d\d)/,
+  );  
+
+  my @vendors = (
+    {
+      'name' => 'Cee Kay Supply',
+      'name_regex' => qr/CEE KAY SUPPLY/,
+      'date_pattern' => 'mmddyyyy',
+    },
+    {
+      'name' => 'DeVine Wine and Spirits',
+      'name_regex' => qr/devine wine & spirits/,
+      'date_pattern' => 'mmddyyyy',
+    },
+    {
+      'name' => 'St. Louis Wine and Beermaking',
+      'name_regex' => qr//,
+      'date_pattern' => 'mmddyyyy',
+    },
+  );
+
+  # First, let's see if we can find the date in a format we recognize.
+  my $found_date_pattern;
+  foreach my $pattern(keys %date_pattern){
+    if($ocr_text =~ /$date_pattern{$pattern}/ig){
+      $found_date_pattern = $pattern;
+      last;
+    }
+  }
+  die("No matching date patterns found!") unless $found_date_pattern;
+  print "Matched date pattern: $found_date_pattern\n";
+
+  # Now test for vendor names based on the matching date pattern.
+  my $found_vendor_name;
+  foreach my $vendor_hashref(@vendors){
+    next unless($vendor_hashref->{'date_pattern'} eq $found_date_pattern);
+    next unless($ocr_text =~ /$vendor_hashref->{'name_regex'}/ig);
+    print $vendor_hashref->{'name'};
+  }
+}
+exit;

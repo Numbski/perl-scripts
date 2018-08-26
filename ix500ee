@@ -1,0 +1,14 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Device::USB;
+use Data::Dumper;
+
+my $usb = Device::USB->new();
+my $dev = $usb->find_device(0x04c5,0x13f3);
+$dev->set_configuration(1);
+
+die("Failed to claim this scanner's interface.  Exiting.") if
+($dev->claim_interface(0) < 0);
+#die("Failed to get config!") unless $dev->get_configuration(0);

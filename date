@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+use strict;
+
+print time();
+
+my $formatted_date = scalar localtime();
+
+#print localtime();
+print "\n";
+print "$formatted_date\n";
+print scalar localtime() . "\n";
+

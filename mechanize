@@ -1,0 +1,35 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use WWW::Mechanize;
+use HTTP::Cookies;
+use Data::Dumper;
+
+my $m = WWW::Mechanize->new( 
+  'autocheck' => 1, 
+  'agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:20.0) Gecko/20100101 Firefox/20.0',
+  'cookie_jar' => HTTP::Cookies->new( 
+    'file' => '/Users/tshadwick/.cookies.txt',
+    'autosave' => 1,
+  ),
+);
+
+$m->get("https://plus.google.com");
+#print $m->content;
+my @forms = $m->forms();
+#print Dumper(@forms);
+#exit;
+
+$m->form_name('gaia_loginform');
+$m->field('Email','numbski@gmail.com');
+$m->field('Passwd','slipup77');
+$m->submit();
+
+$m->form_name('verifyForm');
+$m->field('smsUserPin','558518');
+$m->submit();
+
+$m->form_name('hiddenpost');
+$m->submit();
+
+#print $m->content;

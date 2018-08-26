@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+use strict;
+use iPhone;
+
+my $phone;
+iphone_device_int $phone;
+#iPhone->iphone_lckd_new_client($phone);
+
+if($phone){
+	print "Yay, we have a phone: $phone\n";
+}
+else{
+	print "Boo, no phone.\n";
+}
+exit;

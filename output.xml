@@ -1,0 +1,854 @@
+<?xml version="1.0"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<html>
+    <head>
+        <link href="/youmail/stylesheet/images.css?noc=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/stylesheet/vm/ymtable.css?noc=1230592580628" rel="stylesheet" type="text/css" />
+        <script src="/youmail/ymui/flash/player/ufo.js?noc=1230592580628" type="text/javascript"></script>
+        <script src="/youmail/ymui/flash/player/audio_player.js?noc=1230592580628" type="text/javascript"></script>
+        <script src="/youmail/js/flash_player.js?noc=1230592580628" type="text/javascript"></script>
+        <script src="/youmail/yui/build/utilities/utilities.js" type="text/javascript"></script>
+        <!-- [if IE]>
+<style type="text/css" media="screen">
+.pvMsgBody {
+height:expression(
+this.scrollHeight > 50? "50px" : "auto" );
+}
+div.shareHeader
+{
+width: 16px;
+}
+/* workaround for ie transparency issue with curve box */
+.ymboxi2 {
+height:100px;
+}
+.vmTableArea
+{ /* fix weird width problem*/
+height: 100%;
+}
+.ym-dt-first, .ym-dt-cell, .ym-dt-last {
+font-size: 12px;
+}
+</style>
+<![endif] -->
+        <style media="print" type="text/css">
+/* special css - only for media="print" */
+div.inboxTable {overflow: visible; }
+table.ym-dt-cl>tbody {overflow: visible; }
+thead.ym-dt-cl {display: table-header-group; }
+thead.ym-dt-cl th, thead.ym-dt-cl td {position: static; }
+</style>
+        <script type="text/javascript">
+function hideRecorderWindow() {
+var rc = getRecorderEl();
+if (rc != null) {
+rc.parentNode.removeChild(rc);
+}
+}
+function flashRecorderGetRecordingId() {
+var recorderWindow = getRecorder();
+if (recorderWindow.ymFlashRecorderGetRecordingId != null) {
+//alert("id: " + recorderWindow.ymFlashRecorderGetRecordingId());
+return recorderWindow.ymFlashRecorderGetRecordingId();
+} else {
+alert("Unable to get recording id");
+}
+return null;
+}
+function getRecorderEl()
+{
+var vmRecorderDiv = getChildElementById("vmId");
+return getChildElementById("flashrecorder1", vmRecorderDiv);
+}
+function getRecorder()
+{
+var frameEl = getRecorderEl();
+return frameEl.contentWindow;
+}
+</script>
+        <title>YouMail - Voicemail Inbox</title>
+        <meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" />
+        <meta content="no-cache" http-equiv="Pragma" />
+        <meta content="" name="description" />
+        <meta content="" name="keywords" />
+        <link href="/youmail/ymui/img/favicon/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+        <link href="/youmail/ymui/img/favicon/favicon.ico" rel="icon" type="image/vnd.microsoft.icon" />
+        <script>
+var isIE6 = false;
+var isIE7 = false;
+</script>
+        <!-- [if gte IE 7]>
+<link rel="stylesheet" type="text/css" href="/youmail/stylesheet/ie7.css?lastupdate=1230592580628" >
+<script>isIE7 = true;</script>
+<![endif] -->
+<!--  Begin YUI Base  -->
+        <link href="/youmail/yui/build/reset-fonts-grids/reset-fonts-grids.css" rel="stylesheet" type="text/css" />
+        <script src="/youmail/yui/build/yahoo/yahoo-min.js" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/ymyui.js" type="text/javascript"></script>
+        <!--  End YUI Base  -->
+        <script src="/youmail/yui/build/event/event-min.js" type="text/javascript"></script>
+        <script src="/youmail/yui/build/dom/dom-min.js" type="text/javascript"></script>
+        <script src="/youmail/yui/build/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script>
+        <script src="/youmail/yui/build/element/element-beta-min.js" type="text/javascript"></script>
+        <script src="/youmail/yui/build/connection/connection-min.js" type="text/javascript"></script>
+        <link href="/youmail/yui/build/assets/skins/sam/container.css" rel="stylesheet" type="text/css" />
+        <script src="/youmail/yui/build/container/container-min.js" type="text/javascript"></script>
+        <!--  Begin YUI Menu Buttons  -->
+<!--  OPTIONAL: Menu and Container Core (required for creating buttons of type "menu" and "split")  -->
+        <link href="/youmail/yui/build/menu/assets/skins/sam/menu.css" rel="stylesheet" type="text/css" />
+        <!--  OPTIONAL: Menu Stylesheet (required for creating buttons of type "menu" and "split")  -->
+        <script src="/youmail/yui/build/container/container_core-min.js" type="text/javascript"></script>
+        <script src="/youmail/yui/build/menu/menu-min.js" type="text/javascript"></script>
+        <!--  End YUI Menu Buttons  -->
+<!--  Begin YUI Buttons  -->
+<!--  Core + Skin CSS  -->
+        <link href="/youmail/yui/build/button/assets/skins/sam/button.css" rel="stylesheet" type="text/css" />
+        <!--  Dependencies  -->
+<!--  Source file  -->
+        <script src="/youmail/yui/build/button/button-min.js" type="text/javascript"></script>
+        <!--  End YUI Buttons  -->
+<!--  Begin YUI Tabs  -->
+        <link href="/youmail/yui/build/assets/skins/sam/tabview.css" rel="stylesheet" type="text/css" />
+        <script src="/youmail/yui/build/tabview/tabview-min.js" type="text/javascript"></script>
+        <!--  End YUI Tabs  -->
+        <link href="/youmail/ymui/css/yui.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/ymui/css/base.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/ymui/css/header.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/ymui/css/footer.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/ymui/css/forms.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/ymui/css/skin/ymclassic.css?lastupdate=1230592580628" rel="stylesheet" />
+        <script src="/youmail/ymui/js/base.js?lastupdate=1230592580628" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/prototype.js" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/overlibmws/overlibmws.js" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/overlibmws/overlibmws_filter.js" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/overlibmws/overlibmws_exclusive.js" type="text/javascript"></script>
+        <script src="/youmail/ymui/js/overlibmws/overlibmws_modal.js" type="text/javascript"></script>
+        <link href="/youmail/stylesheet/web.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/stylesheet/tabs.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/stylesheet/vm/inbox.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <link href="/youmail/stylesheet/popup.css?lastupdate=1230592580628" rel="stylesheet" type="text/css" />
+        <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+        <script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-572721-1");
+pageTracker._setDomainName("youmail.com");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+    
+<!--  -21600000  -->
+</head>
+    <body class="yui-skin-sam" id="main" onload="" style="margin: 0px 0px 0px 0px; background-color:#fff;">
+        <div id="ymPopup" style="display:none">
+            <div class="hd">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="btcorner">    </td>
+                        <td class="btmain">
+                            <span class="popupTitle" id="ymPopupTitleId"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="bd">
+                <div class="popupRB">
+                    <div class="popupBody" id="ymPopupBodyId">Body
+</div>
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+            <div class="ft">
+                <div></div>
+            </div>
+        </div>
+        <!--  overlib  -->
+        <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+        <div class="masterNavContainer">
+            <div class="masterNav">
+                <div class="masterLeftNav">
+                    <div class="masterSep"></div>
+                    <div class="masterUnitSelected masterUnit">
+                        <a href="/youmail/home.do">
+My Voicemail
+</a>
+                    </div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/login/greetings.do">
+YouMail Community
+</a>
+                    </div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/login/store/home.do">
+YouMail Store
+</a>
+                    </div>
+                </div>
+                <div class="masterRightNav">
+                    <div class="masterUnit">
+(314) 221-1473
+ (<a href="/youmail/user/carrierRelay.do">T-Mobile ®</a>)
+</div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/youmail/user/account.do">
+My Account
+</a>
+                    </div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/youmail/help/home.do">
+Help
+</a>
+                    </div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/login/user/friendInvite.do">
+Invite
+</a>
+                    </div>
+                    <div class="masterSep"></div>
+                    <div class="masterUnit">
+                        <a href="/youmail/signout.do">
+Sign Out
+</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ymDoc">
+            <div id="hd">
+                <div class="ymHeader">
+                    <div style="clear:both; width:1000px; height:94px; position:relative;">
+                        <div style="float:left; height:94px; width:168px;">
+                            <div style="position:absolute; bottom:5px; left:10px;">
+                                <a href="/home">
+                                    <img border="0" src="/login/ymui/img/ymlogolove.jpg" />
+                                </a>
+                            </div>
+                        </div>
+                        <div style="float:right; width:730px; height:91px; overflow:hidden; padding-right:10px;">
+                            <!--  ymad webAppLeader  -->
+                            <div id="webAppLeader">
+                                <script src="http://ads.youmail.com/ads/getad.js?loc=webAppLeader&amp;d_carrier=tmo&amp;d_areacode=314" type="text/javascript"></script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             <!--  end ymHeader  -->
+</div>
+            <!--  end hd  -->
+            <div id="bd">
+                <div id="mainTabs">
+                    <div id="mainNav">
+                        <div id="mainNavLeft"></div>
+                        <ul>
+                            <li>
+                                <a href="/youmail/home.do" name="tab0">Home</a>
+                            </li>
+                            <li>
+                                <a class="selectedTab" href="/youmail/vm/inbox/inbox.do" name="tab1">Voicemail</a>
+                            </li>
+                            <li>
+                                <a href="/youmail/greeting/home.do" name="tab2">Greetings</a>
+                            </li>
+                            <li>
+                                <a href="/youmail/contact/contactList.do" name="tab3">Contacts</a>
+                            </li>
+                        </ul>
+                        <div id="mainNavRight">
+                            <a href="">Tip: Call Forwarding Setup - Samsung SCH u540 on Verizon Wireless </a>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+                <div id="mainBody">
+                    <div id="mainContentPane">
+                        <script type="text/javascript">
+var Youmail = new Object();
+Youmail.vm = new Object();
+Youmail.vm.sharedPage = false;
+Youmail.vm.actionUrl = "/youmail/vm/inbox/buttonAction.do?";
+Youmail.vm.tableResized = false;
+Youmail.vm.curEntryId = 0;
+Youmail.vm.dynaDialogActive = false;
+Youmail.vm.autoAction = null;
+Youmail.vm.star = 3;
+Youmail.vm.selected = "Inbox";
+Youmail.vm.selectedFolder = "Inbox";
+Youmail.vm.inboxFolder = "f=Inbox";
+Youmail.vm.vmPage = "Inbox";
+Youmail.vm.entryId = 0;
+Youmail.vm.vmNoCacheParam = "noc=" + 1231178404299;
+Youmail.vm.pageType = "Inbox";
+Youmail.vm.leftNavMinHeight = 0;
+Youmail.vm.transcriptionAllowed = false;
+Youmail.vm.sort = "created";
+Youmail.vm.dir = "n";
+Youmail.vm.dirStr = "desc";
+Youmail.vm.data = {
+messageBox: {
+mbId: 238293,
+mbName: "Default Message Box",
+newMessageCount: 24,
+folders: [
+{folderId: "folderSysInbox",folderKey: "Inbox",label:"Inbox",selected:true,count:41,hasNew:true, url:"/youmail/vm/inbox/inbox.do?f=Inbox"},
+{folderId: "folderSysFlagged",folderKey: "Flagged",label:"Flagged",selected:false,count:0,hasNew:false, url:"/youmail/vm/inbox/inbox.do?f=Flagged"},
+{folderId: "folderSysSave",folderKey: "Save",label:"Saved",selected:false,count:0,hasNew:false, url:"/youmail/vm/inbox/inbox.do?f=Save"},
+{folderId: "folderSysTrash",folderKey: "Trash",label:"Trash",selected:false,count:0,hasNew:false, url:"/youmail/vm/inbox/inbox.do?f=Trash"},
+{folderId: "folderSysSpam",folderKey: "Spam",label:"Spam",selected:false,count:0,hasNew:false, url:"/youmail/vm/inbox/inbox.do?f=Spam"},
+{folderId: "folderSysHistory",folderKey: "History",label:"History",selected:false,count:0,hasNew:false, url:"/youmail/vm/inbox/inbox.do?f=History"}
+],
+messages: [
+{XID: "14977312",info:"Normal",priority:false,from:"Larry Shadwick",rawFrom:"(618) 670-6545", transcript:"", to:"(314) 221-1473",created:"Sat 6:01 PM", cpt:30, length:"14 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "14927043",info:"Normal",priority:false,from:"WYDRA,PAUL",rawFrom:"(314) 629-2679", transcript:"", to:"(314) 221-1473",created:"Fri 2:57 PM", cpt:50, length:"47 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "14709679",info:"Normal",priority:false,from:"DEPROW SERVICES",rawFrom:"(636) 349-8300", transcript:"", to:"(314) 221-1473",created:"12/29/08 9:23 AM", cpt:50, length:"34 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "14701157",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"12/28/08 9:15 PM", cpt:30, length:"21 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "14613268",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"12/26/08 3:13 PM", cpt:30, length:"89 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "14557678",info:"Normal",priority:false,from:"Ian Schraier",rawFrom:"(314) 994-1087", transcript:"", to:"(314) 221-1473",created:"12/24/08 11:25 PM", cpt:10, length:"6 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "14266780",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"12/18/08 8:55 PM", cpt:30, length:"36 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "14174792",info:"Normal",priority:false,from:"Brian Schenk",rawFrom:"(314) 239-7350", transcript:"", to:"(314) 221-1473",created:"12/17/08 11:45 AM", cpt:30, length:"25 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "14169437",info:"Normal",priority:false,from:"TECHNOLOGY PART",rawFrom:"(636) 519-1221", transcript:"", to:"(314) 221-1473",created:"12/17/08 10:22 AM", cpt:50, length:"52 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "14065717",info:"Normal",priority:false,from:"TEKSYSTEMS",rawFrom:"(314) 819-1175", transcript:"", to:"(314) 221-1473",created:"12/15/08 11:23 AM", cpt:50, length:"26 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "14041807",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"12/14/08 5:07 PM", cpt:30, length:"43 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13986553",info:"Normal",priority:false,from:"WALGREEN DRUG S",rawFrom:"(636) 529-0122", transcript:"", to:"(314) 221-1473",created:"12/13/08 10:01 AM", cpt:50, length:"25 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "13841263",info:"Normal",priority:false,from:"TECHNOLOGY PART",rawFrom:"(636) 519-1221", transcript:"", to:"(314) 221-1473",created:"12/10/08 2:11 PM", cpt:50, length:"65 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "13819896",info:"Normal",priority:false,from:"CHARTER GLOBAL",rawFrom:"(678) 397-1090", transcript:"", to:"(314) 221-1473",created:"12/10/08 7:54 AM", cpt:50, length:"66 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "13729281",info:"Normal",priority:false,from:"Home Cleaning Centers of America",rawFrom:"(636) 394-8680", transcript:"", to:"(314) 221-1473",created:"12/08/08 12:12 PM", cpt:10, length:"17 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13254203",info:"Normal",priority:false,from:"Larry Shadwick",rawFrom:"(618) 670-6545", transcript:"", to:"(314) 221-1473",created:"11/27/08 11:55 AM", cpt:30, length:"9 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13205154",info:"Normal",priority:false,from:"Kyle Lehman",rawFrom:"(317) 517-0407", transcript:"", to:"(314) 221-1473",created:"11/26/08 10:59 AM", cpt:30, length:"11 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "13145252",info:"Normal",priority:false,from:"Home Cleaning Centers of America",rawFrom:"(636) 394-8680", transcript:"", to:"(314) 221-1473",created:"11/25/08 8:54 AM", cpt:10, length:"38 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13134085",info:"Normal",priority:false,from:"Karen Shadwick",rawFrom:"(314) 517-3215", transcript:"", to:"(314) 221-1473",created:"11/24/08 8:05 PM", cpt:30, length:"10 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13121558",info:"Normal",priority:false,from:"Kyle Lehman",rawFrom:"(317) 517-0407", transcript:"", to:"(314) 221-1473",created:"11/24/08 4:33 PM", cpt:30, length:"37 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "13113350",info:"Normal",priority:false,from:"Karen Shadwick",rawFrom:"(314) 517-3215", transcript:"", to:"(314) 221-1473",created:"11/24/08 2:35 PM", cpt:30, length:"13 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "13091542",info:"Normal",priority:false,from:"DEPROW SERVICES",rawFrom:"(636) 349-8300", transcript:"", to:"(314) 221-1473",created:"11/24/08 8:01 AM", cpt:50, length:"24 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "13087400",info:"Normal",priority:false,from:"Jake Wyllie",rawFrom:"(636) 579-9703", transcript:"", to:"(314) 221-1473",created:"11/23/08 9:46 PM", cpt:30, length:"44 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13067440",info:"Normal",priority:false,from:"Jake Wyllie",rawFrom:"(636) 579-9703", transcript:"", to:"(314) 221-1473",created:"11/23/08 12:15 PM", cpt:30, length:"25 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "13026677",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"11/22/08 9:49 AM", cpt:30, length:"32 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "13009238",info:"Normal",priority:false,from:"Kelly Schmidtke",rawFrom:"(314) 306-4171", transcript:"", to:"(314) 221-1473",created:"11/21/08 6:20 PM", cpt:30, length:"37 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "13006606",info:"Normal",priority:false,from:"Jonathon Dargan",rawFrom:"(314) 323-7158", transcript:"", to:"(314) 221-1473",created:"11/21/08 5:36 PM", cpt:30, length:"66 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12990801",info:"Normal",priority:false,from:"WHOLESALE LAND",rawFrom:"(636) 225-7382", transcript:"", to:"(314) 221-1473",created:"11/21/08 1:52 PM", cpt:50, length:"20 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12912708",info:"Normal",priority:false,from:"DEPROW SERVICES",rawFrom:"(636) 349-8300", transcript:"", to:"(314) 221-1473",created:"11/20/08 9:16 AM", cpt:50, length:"21 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12854550",info:"Normal",priority:false,from:"YouMail Support",rawFrom:"(800) 374-0013", transcript:"", to:"(314) 221-1473",created:"11/19/08 12:09 PM", cpt:20, length:"31 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12842571",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/19/08 9:18 AM", cpt:50, length:"40 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12826389",info:"Normal",priority:false,from:"Larry Shadwick",rawFrom:"(618) 670-6545", transcript:"", to:"(314) 221-1473",created:"11/18/08 6:30 PM", cpt:30, length:"30 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "12825063",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/18/08 6:08 PM", cpt:50, length:"21 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12819267",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/18/08 4:39 PM", cpt:50, length:"13 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12785502",info:"Normal",priority:false,from:"Nathan Randall",rawFrom:"(517) 914-3066", transcript:"", to:"(314) 221-1473",created:"11/17/08 10:08 PM", cpt:30, length:"13 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12754225",info:"Normal",priority:false,from:"DEPROW SERVICES",rawFrom:"(636) 349-8300", transcript:"", to:"(314) 221-1473",created:"11/17/08 12:30 PM", cpt:50, length:"24 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12742841",info:"Normal",priority:false,from:"Karen Shadwick",rawFrom:"(314) 517-3215", transcript:"", to:"(314) 221-1473",created:"11/17/08 9:00 AM", cpt:30, length:"15 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:1},
+{XID: "12733826",info:"Normal",priority:false,from:"Nathan Randall",rawFrom:"(517) 914-3066", transcript:"", to:"(314) 221-1473",created:"11/16/08 7:51 PM", cpt:30, length:"13 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12724148",info:"Normal",priority:false,from:"Karen Shadwick",rawFrom:"(314) 517-3215", transcript:"", to:"(314) 221-1473",created:"11/16/08 3:20 PM", cpt:30, length:"30 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12658010",info:"Normal",priority:false,from:"OBJECTWIN TECH",rawFrom:"(832) 485-3633", transcript:"", to:"(314) 221-1473",created:"11/14/08 5:52 PM", cpt:50, length:"5 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12655575",info:"Normal",priority:false,from:"OBJECTWIN TECH",rawFrom:"(832) 485-3633", transcript:"", to:"(314) 221-1473",created:"11/14/08 5:12 PM", cpt:50, length:"31 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12648315",info:"Normal",priority:false,from:"OBJECTWIN TECH",rawFrom:"(832) 485-3633", transcript:"", to:"(314) 221-1473",created:"11/14/08 3:27 PM", cpt:50, length:"6 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12646772",info:"Normal",priority:false,from:"OBJECTWIN TECH",rawFrom:"(832) 485-3633", transcript:"", to:"(314) 221-1473",created:"11/14/08 3:03 PM", cpt:50, length:"38 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12640310",info:"Normal",priority:false,from:"INSOURCE GROUP",rawFrom:"(972) 881-1313", transcript:"", to:"(314) 221-1473",created:"11/14/08 1:27 PM", cpt:50, length:"39 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12623926",info:"Normal",priority:false,from:"INSOURCE GROUP",rawFrom:"(972) 881-1313", transcript:"", to:"(314) 221-1473",created:"11/14/08 8:48 AM", cpt:50, length:"30 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12600607",info:"Normal",priority:false,from:"INSOURCE GROUP",rawFrom:"(972) 881-1313", transcript:"", to:"(314) 221-1473",created:"11/13/08 5:06 PM", cpt:50, length:"51 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "12429121",info:"Normal",priority:false,from:"Home Cleaning Centers of America",rawFrom:"(636) 394-8680", transcript:"", to:"(314) 221-1473",created:"11/10/08 11:55 AM", cpt:10, length:"17 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:1},
+{XID: "12330704",info:"Normal",priority:false,from:"OBJECTWIN TECH",rawFrom:"(832) 485-3633", transcript:"", to:"(314) 221-1473",created:"11/07/08 3:53 PM", cpt:50, length:"29 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12330564",info:"Normal",priority:false,from:"TECHNOLOGY PART",rawFrom:"(636) 519-1221", transcript:"", to:"(314) 221-1473",created:"11/07/08 3:51 PM", cpt:50, length:"33 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12307890",info:"Normal",priority:false,from:"INSOURCE GROUP",rawFrom:"(972) 881-1313", transcript:"", to:"(314) 221-1473",created:"11/07/08 9:48 AM", cpt:50, length:"40 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12303891",info:"Normal",priority:false,from:"DALE SIGN SVC",rawFrom:"(314) 966-2620", transcript:"", to:"(314) 221-1473",created:"11/07/08 8:12 AM", cpt:50, length:"47 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "12253923",info:"Normal",priority:false,from:"TECHNOLOGY PART",rawFrom:"(636) 519-1221", transcript:"", to:"(314) 221-1473",created:"11/06/08 8:17 AM", cpt:50, length:"36 sec",share:true,flagged:false, note:"", selected:false, isNew:false, ct:3},
+{XID: "12211558",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/05/08 10:38 AM", cpt:50, length:"2 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12210844",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/05/08 10:25 AM", cpt:50, length:"10 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3},
+{XID: "12179137",info:"Normal",priority:false,from:"KENDALL PLACE M",rawFrom:"(314) 985-1100", transcript:"", to:"(314) 221-1473",created:"11/04/08 3:29 PM", cpt:50, length:"16 sec",share:true,flagged:false, note:"", selected:false, isNew:true, ct:3} ]
+}
+};
+function setQuotaLvl(perc)
+{
+var total = 110;
+var seen = total * perc / 100;
+var hiderLength = total - seen;
+var hider = document.getElementById("quotaHiderId");
+hider.style.marginLeft = seen + "px";
+hider.style.width = hiderLength + "px";
+var quotaLabel = document.getElementById("quotaLvlId");
+quotaLabel.innerHTML = perc + "";
+}
+</script>
+                        <script src="/youmail/js/validation.js?noc=1230592580628" type="text/javascript"></script>
+                        <script src="/youmail/js/vm/inboxsetup.js?noc=1230592580628" type="text/javascript"></script>
+                        <script src="/youmail/js/vm/inbox.js?noc=1230592580628" type="text/javascript"></script>
+                        <script src="/youmail/js/vm/inboxajax.js?noc=1230592580628" type="text/javascript"></script>
+                        <script type="text/javascript">
+Youmail.vm.initFolderMenu = function() {
+var folderActionItems = [
+[
+{ text: "New Folder", onclick: { fn: folderActionExecute, obj: "New Folder" } },
+{ text: "Edit", onclick: { fn: folderActionExecute, obj: "Edit" } },
+{ text: "Delete", onclick: { fn: folderActionExecute, obj: "Delete" } }
+],
+[
+{ text: "Mailbox Usage", onclick: { fn: folderActionExecute, obj: "Mailbox Usage" } }
+]
+];
+var folderActionMenu = new YAHOO.widget.ContextMenu(
+"folderAction",
+{
+trigger: new Array(
+"folderSysInbox",
+"folderSysFlagged",
+"folderSysSave",
+"folderSysTrash",
+"folderSysSpam",
+"folderSysHistory"
+),
+itemdata: folderActionItems,
+lazyload: true
+}
+);
+// Add a "render" event handler to the field context menu
+folderActionMenu.subscribe("show", onFolderActionMenuRender);
+function folderActionExecute(p_sType, p_aArgs, p_sAction)
+{
+var menu = this.parent;
+var folderId = findFolderId(menu.contextEventTarget);
+if (p_sAction == null) {
+// do nothing
+} else if (p_sAction == "Delete") {
+inboxDeleteFolder(folderId);
+} else if (p_sAction == "New Folder") {
+openEditFolderDialog(true);
+} else if (p_sAction == "Edit") {
+openEditFolderDialog(false, folderId);
+} else if (p_sAction == "Folder Usage") {
+openUrlPanel('Folder Usage Information', '400px', '600px', '/youmail/vm/inbox/getFolderUsageInfo.do?f=' + folderId);
+} else if (p_sAction == "Mailbox Usage") {
+openUrlPanel('Usage Information', '400px', '600px', '/youmail/vm/inbox/getServiceClassInfo.do');
+} else {
+// do nothing
+}
+}
+function onFolderActionMenuRender(e)
+{
+var menu = this;
+var folderId = findFolderId(menu.contextEventTarget);
+if (folderId == null) {
+return;
+}
+if (folderId.indexOf('folderSys') >= 0) {
+// disable delete and edit if system folder
+menu.getItem(1).cfg.setProperty("disabled", true);
+menu.getItem(2).cfg.setProperty("disabled", true);
+} else {
+menu.getItem(1).cfg.setProperty("disabled", false);
+menu.getItem(2).cfg.setProperty("disabled", false);
+}
+}
+/* find an id that start with 'folder', this will have the folder info, return it. */
+function findFolderId(contextEl)
+{
+if (contextEl == null) {
+return null;
+}
+if (contextEl.id != null) {
+if (contextEl.id.indexOf('folder') >= 0) {
+// found class name that starts with folderSys folderCus
+return contextEl.id;
+}
+}
+return findFolderId(contextEl.parentNode);
+}
+};
+</script>
+                        <div>
+                            <div>
+                                <div class="buttonPanelContainer"><script type="text/javascript">
+function newTableButtonSubmit(e)
+{
+var theForm = document.forms["actionForm"];
+processAction(theForm.buttonName.value);
+YAHOO.util.Event.preventDefault(e); // ie workaround, double submit problem with yui button
+}
+function tableButtonSubmit(theForm)
+{
+processAction(theForm.buttonName.value);
+return false;
+}
+function processAction(buttonName, optEntryId)
+{
+var entryIds;
+if (optEntryId == null) {
+entryIds = getSelectedEntryIds();
+} else {
+entryIds = optEntryId;
+}
+var numEntries = countEntries(entryIds);
+if (numEntries != 1) {
+if (buttonName == "replyEmail" || buttonName == "replyText" || buttonName == "replyVM" || buttonName == "spam" || buttonName == "ditch" || buttonName == "forward" || buttonName == "editContact" || buttonName == "editTrans" || buttonName == "transApprove") {
+alert("Please select one message and try again.");
+return false;
+}
+}
+if (numEntries == 0) {
+if (buttonName == "delete" || buttonName == "replyEmail" || buttonName == "replyText" || buttonName == "replyVM" || buttonName == "spam" || buttonName == "moveSave" || buttonName == "moveTrash" || buttonName == "moveSpam" || buttonName == "ditch" || buttonName == "skip" || buttonName == "forward" || buttonName == "share" || buttonName == "unshare" || buttonName == "flag" || buttonName == "unflag" || buttonName == "editContact" || buttonName == "editTrans" || buttonName == "transApprove" || buttonName == "transcribe") {
+alert("Please select a message by clicking the checkbox of the message and try again.");
+return false;
+}
+}
+if (buttonName == "replyEmail") {
+openReplyDialog(entryIds, "email");
+return false;
+}
+if (buttonName == "replyText") {
+openReplyDialog(entryIds, "sms");
+return false;
+}
+if (buttonName == "replyVM") {
+openReplyDialog(entryIds, "vm");
+return false;
+}
+if (buttonName == "spam") {
+openSpamDialog(entryIds);
+return false;
+}
+if (buttonName == "ditch") {
+openDitchDialog(entryIds);
+return false;
+}
+if (buttonName == "forward") {
+openForwardDialog(entryIds);
+return false;
+}
+if (buttonName == "editContact") {
+openEditContactDialog(entryIds);
+return false;
+}
+if (buttonName == "addUnknownContacts") {
+addUnknownContacts();
+return false;
+}
+if (buttonName == "editTrans") {
+openTranscriptionDialog(entryIds);
+return false;
+}
+if (buttonName == "transApprove") {
+openTransApproveDialog(entryIds);
+return false;
+}
+if (buttonName == "transcribe") {
+toggleDisplay('pvMsgTranscribeRepl'); toggleDisplay('pvMsgOrigId');
+}
+var actionUrl = "/youmail/vm/inbox/buttonAction.do?buttonName=" + buttonName + "&amp;entryIds=" + entryIds + "&amp;pt=" + Youmail.vm.pageType;
+inAjax.simpleRequest(actionUrl, buttonName);
+}
+function onMenuItemClick(p_sType, p_aArgs, p_oItem)
+{
+processAction(p_oItem.value);
+}
+function onDefaultMenuButtonPress(theEvent) {
+var buttonId = theEvent.target.parentNode.parentNode.id;
+var buttonKey = null;
+if (buttonId == "replyButton") {
+buttonKey = "replyEmail";
+}
+processAction(buttonKey);
+}
+function addUnknownContacts()
+{
+window.location="/youmail/contact/addBulkContacts.do?f=Inbox";
+}
+function initButtonPane()
+{
+var replyMenu = [
+{ text: "Reply By Email", value: "replyEmail", onclick: { fn: onMenuItemClick } },
+{ text: "Reply By Text", value: "replyText", onclick: { fn: onMenuItemClick } },
+{ text: "Reply By Voice Message", value: "replyVM", onclick: { fn: onMenuItemClick } }
+];
+var replyMenuButton = new YAHOO.widget.Button("replyButton", {
+type: "split",
+label: "Reply",
+id: "replyButton",
+name: "replyButton",
+menu: replyMenu,
+lazyloadmenu: false});
+replyMenuButton.addListener("click", onDefaultMenuButtonPress);
+var moveMenu = [
+{ text: "Saved", value: "moveSave", onclick: { fn: onMenuItemClick } },
+{ text: "Trash", value: "moveTrash", onclick: { fn: onMenuItemClick } },
+{ text: "Spam", value: "moveSpam", onclick: { fn: onMenuItemClick } }
+];
+var moveMenuButton = new YAHOO.widget.Button("moveButton", {
+type: "menu",
+label: "Move To...",
+id: "moveButton",
+name: "moveButton",
+menu: moveMenu,
+lazyloadmenu: false});
+var moreActionsMenu = [
+[
+{ text: "Ditch", value: "ditch", onclick: { fn: onMenuItemClick } },
+{ text: "Mark As Listened", value: "skip", onclick: { fn: onMenuItemClick } },
+{ text: "Forward", value: "forward", onclick: { fn: onMenuItemClick } }
+],
+[
+{ text: "Enable Message Sharing", value: "share", onclick: { fn: onMenuItemClick } },
+{ text: "Disable Message Sharing", value: "unshare", onclick: { fn: onMenuItemClick } }
+],
+[
+{ text: "Flag for Follow-up", value: "flag", onclick: { fn: onMenuItemClick } },
+{ text: "Clear Flag", value: "unflag", onclick: { fn: onMenuItemClick } }
+],
+[
+{ text: "Edit Contact", value: "editContact", onclick: { fn: onMenuItemClick } },
+{ text: "Add Callers As Contacts", value: "addUnknownContacts", onclick: { fn: onMenuItemClick } }
+]
+];
+var moreActionsMenuButton = new YAHOO.widget.Button("moreActionsButton", {
+type: "menu",
+label: "More Actions...",
+id: "moreActionsButton",
+name: "moreActionsButton",
+menu: moreActionsMenu,
+lazyloadmenu: false});
+var replyMenuEl = getChildElementById("replyButton");
+if (replyMenuEl != null) {
+replyMenuEl.className = "ymDefault " + replyMenuEl.className;
+}
+var moveMenuEl = getChildElementById("moveButton");
+if (moveMenuEl != null) {
+moveMenuEl.className = "ymDefault " + moveMenuEl.className;
+}
+var moreActionsMenuEl = getChildElementById("moreActionsButton");
+if (moreActionsMenuEl != null) {
+moreActionsMenuEl.className = "ymDefault " + moreActionsMenuEl.className;
+}
+getChildElementById("dropDownButtonPaneLoadingId").style.display="none";
+getChildElementById("dropDownButtonPaneId").style.display="block";
+YAHOO.util.Event.on("actionForm", "submit", newTableButtonSubmit);// ie workaround, double submit problem with yui button
+}
+</script><div class="vmActionPane" id="vm_action_pane"><div style="margin: 0px 0px 5px 2px; "><div style="float:left"><span style="font-weight: bold; font-size: 12pt">Inbox</span> <span id="headerMessageId" style="font-size: 10pt"> (0 messages)</span></div><div style="clear:both"></div></div><div id="dropDownButtonPaneId" style="display: none"><form action="#" id="actionForm" method="post" name="actionForm" style="float: left"><input name="buttonName" type="hidden" value="none" /><input name="entryIds" type="hidden" /><input name="p_o1" type="hidden" value="created" /><input name="p_oa1" type="hidden" value="true" /><input name="f" type="hidden" value="Inbox" /><div style="float: left"><span class="ymDefault yui-button yui-push-button" id="delete"><span class="first-child"><button onclick="this.form.buttonName.value='delete'" title="" type="submit">Delete</button></span></span></div><div style="float: left"><input id="replyButton" name="replyButton" type="button" value="Reply" /></div><div style="float: left"><span class="ymDefault yui-button yui-push-button" id="spam"><span class="first-child"><button onclick="this.form.buttonName.value='spam'" title="" type="submit">Report Spam</button></span></span></div><div style="float: left"><input id="moveButton" name="moveButton" type="button" value="Move To..." /></div><div style="float: left"><input id="moreActionsButton" name="moreActionsButton" type="button" value="More Actions..." /></div></form><img id="dialogLoadingImgId" ondblclick="Youmail.vm.setDialogActive(false);" src="/youmail/images/loading.gif" style="display:none; float:right; width:16px; height:16px; margin-top:5px" title="Loading dialog, please wait or double click here to reset" /><div style="clear:both"></div></div><div id="dropDownButtonPaneLoadingId" style="height: 25px; display:block">Loading ... </div><div style="clear:both"></div></div> </div>
+                                <div style="clear:both"></div>
+                            </div>
+                            <div id="leftNavCId">
+                                <div id="leftNavHolderId" style="float: left; display: block; width: 165px;"> </div>
+                                <div id="leftNavId" style="float: left; display: none; width: 165px; font-size: 12px; border:1px transparent;"><div class="cb"><div><div class="ymboxtopmain"><div class="ymboxtopcorner"></div></div></div><div class="ymboxi1"><div class="ymboxi2" style="border-bottom:1px transparent"><div class="ymboxbody"><div id="inboxLeftNavId" style="border:1px transparent;"><div><div class="listItem" id="folderSysInbox"><div class="selectedLeftNavItem" id="InboxSelectId"><a href="/youmail/vm/inbox/inbox.do?f=Inbox" id="InboxAId" style="text-decoration: none;"><div class="img_Inbox_folder" id="InboxIId"></div>Inbox
+</a></div><div class="lnNewCount" id="fCount_Inbox">(<span id="fCountNumId">41</span>)</div><div style="clear:both"></div></div><div class="ihbar"></div><div class="listItem" id="folderSysFlagged"><div class="leftNavItem" id="FlaggedSelectId"><a href="/youmail/vm/inbox/inbox.do?f=Flagged" id="FlaggedAId" style="text-decoration: none;"><div class="img_Flagged_folder" id="FlaggedIId"></div>Flagged
+</a></div><div style="clear:both"></div></div><div class="listItem" id="folderSysSave"><div class="leftNavItem" id="SaveSelectId"><a href="/youmail/vm/inbox/inbox.do?f=Save" id="SaveAId" style="text-decoration: none;"><div class="img_Save_folder" id="SaveIId"></div>Saved
+</a></div><div class="lnNewCount" id="fCount_Save"></div><div style="clear:both"></div></div><div class="ihbar"></div><div class="listItem" id="folderSysTrash"><div class="leftNavItem" id="TrashSelectId"><a href="/youmail/vm/inbox/inbox.do?f=Trash" id="TrashAId" style="text-decoration: none;"><div class="img_Trash_folder" id="TrashIId"></div>Trash
+</a></div><div class="lnNewCount" id="fCount_Trash"></div><div class="leftNavSmallLink" onclick="inboxEmptyTrash();" title="Delete forever all messages in the Trash">Empty</div><div style="clear:both"></div></div><div class="listItem" id="folderSysSpam"><div class="leftNavItem" id="SpamSelectId"><a href="/youmail/vm/inbox/inbox.do?f=Spam" id="SpamAId" style="text-decoration: none;"><div class="img_Spam_folder" id="SpamIId"></div>Spam
+</a></div><div class="lnNewCount" id="fCount_Spam"></div><div class="leftNavSmallLink" onclick="inboxEmptySpam();" title="Delete forever all messages in the spam folder">Empty</div><div style="clear:both"></div></div><div class="listItem" id="folderSysHistory"><div class="leftNavItem" id="HistorySelectId"><a href="/youmail/vm/inbox/inbox.do?f=History" id="HistoryAId" style="text-decoration: none;"><div class="img_History_folder" id="HistoryIId"></div>History
+</a></div><div style="clear:both"></div></div></div><div class="ihbar"></div><div><div style="color:gray; font-size: 90%; float: left;">My Folders</div><div class="leftNavSmallLink" onclick="openEditFolderDialog(true);" style="padding-top: 0;" title="Add a new folder">Add</div><div style="clear:both;"></div></div><div style="margin-left: 7px"></div><div style="margin: 20px 2px 0 0; color: gray; font-size: 80%;">Tip: Right click on any folder to create, edit, delete a folder and to view your mailbox usage.</div></div></div></div></div><div class="ymboxb"><div></div></div></div> </div>
+                                <div style="float: left">
+                                    <style type="text/css">
+.yuimenu li {
+list-style-type:none;
+}
+.yui-skin-sam .yui-menu-button button {
+background-image:url(/youmail/images/vm/menu-button-arrow.png);
+}
+</style>
+                                    <!-- [if lt IE 7]>
+<style type="text/css" media="screen">
+/* CSS for IE for popup */
+#ymPopup.yui-panel .ft {
+background:url(/youmail/images/general/pbox.gif) no-repeat 100% 100%;
+}
+#ymPopup.yui-panel .ft div {
+background:url(/youmail/images/general/pbox.gif) no-repeat 0 100%;
+}
+#ymPopup.yui-panel .bd {
+background:url(/youmail/images/general/pboxborders.gif) repeat-y 0 0;
+}
+.popupRB {
+background:url(/youmail/images/general/pboxborders.gif) repeat-y 100% 0;
+}
+.btcorner {
+background:url(/youmail/images/general/pbox.gif) no-repeat 0 0;
+}
+.btmain {
+background: url(/youmail/images/general/pbox.gif) no-repeat top right;
+}
+div.shareHeader
+{
+width: 16px;
+}
+.buttonPanelContainer
+{
+margin-left: 83px;
+width: 785px;
+}
+div.img_Save_folder, div.img_Flagged_folder, div.img_History_folder, div.img_Inbox_folder, div.img_Trash_folder, div.img_my_folder, div.img_Spam_folder, div.userReplyMessage, div.replyMessage, div.selectBoxOff, div.selectBoxOn, div.flaggedOn, div.flaggedHeader, div.flaggedOff, div.shareOn, div.shareHeader, div.shareOff, div.noteOn, div.noteHeader, div.noteOff, div.infoHeader, div.highPriority, div.historyInfoHeader, div.msgOn, div.blockOn, div.img_cp, div.img_contact, div.img_home, div.img_work, div.img_pda, div.img_ym_avatar, div.img_blank16px, div.img_spam, div.img_dir, .img_sh_save, .img_sh_delete, .img_sh_dl, .img_sh_reply, .img_sh_forward, .img_sh_post, .img_sh_ec, .img_sh_gr, .img_sh_invite, div.selectBoxHeader
+{
+background-image:url(/youmail/images/vm/vm_default_ico_ie6.png);
+}
+</style>
+<![endif] -->
+                                    <script src="/youmail/js/vm/ymtable.js?noc=1230592580628" type="text/javascript"></script>
+                                    <script src="/youmail/js/vm/inboxsetup.js?noc=1230592580628" type="text/javascript"></script>
+                                    <script src="/youmail/js/vm/inboxpopups.js?noc=1230592580628" type="text/javascript"></script>
+                                    <script type="text/javascript">
+Youmail.vm.dynaDialogActive = false;
+Youmail.vm.dynaDialog = new Youmail.vm.DynaDialog();
+Youmail.vm.curDialogData = null;
+Youmail.vm.transMenus = null;
+</script>
+                                    <div style="width: 815px">
+                                        <div id="vm_inbox" style="width: 100%; border: 1px transparent">
+                                            <div class="ymViewerPanel" id="ymViewerPanelId" style="margin-left: 2px; "><div class="cb"><div><div class="ymboxtopmain"><div class="ymboxtopcorner"></div></div></div><div class="ymboxi1"><div class="ymboxi2" style="border-bottom:1px transparent"><div class="ymboxbody"><div class="vmTableArea" id="vm_table_area" style="border: none; border-bottom: 1px solid #AAA; padding-bottom: 5px;"><div class="inboxTable" id="inboxTable" style="display: none; height: 100%; min-height: 100px; ">Loading ...</div><div id="inboxTable_filler" style="display: block; height: 100%; min-height: 100px; ">Loading ...</div></div><div id="vm_preview_pane" style="margin-top:5px; padding-top:5px; border-top: 1px solid #AAA; min-height:100px; height: auto !important; height:100px; "><center><br /><br />
+Click on a message in the above list to listen to it.
+<br /></center></div></div></div></div><div class="ymboxb"><div></div></div></div> </div>
+                                            <div style="clear:both"></div>
+                                        </div>
+                                        <div style="clear:both"></div>
+                                        <div id="hiddenAdBox" style="display: none">
+                                            <!--  ymad webAppMedRect  -->
+                                            <div id="webAppMedRect">
+                                                <script src="http://ads.youmail.com/ads/getad.js?loc=webAppMedRect&amp;d_carrier=tmo&amp;d_areacode=314" type="text/javascript"></script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="clear:both"></div>
+                            </div>
+                        </div>
+                        <script>
+if (Youmail.vm.vmPage == "Inbox") {
+YAHOO.util.Event.onAvailable("actionForm", initButtonPane);
+YAHOO.util.Event.onAvailable("inboxTable_filler", Youmail.vm.initYMTable);
+YAHOO.util.Event.onAvailable("leftNavCId", Youmail.vm.initFolderMenu);
+}
+</script>
+                    </div>
+                </div>
+            </div>
+            <!--  end div id=bd  -->
+            <div class="ymFooter">
+                <div class="footerLinks">
+                    <div class="footerLinkUnit">
+                        <table class="footerLinkTable">
+                            <tr>
+                                <td class="footerLinkCat" colspan="2">My Account</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/vm/inbox/inbox.do">My Inbox</a>
+                                </td>
+                                <td>
+                                    <a href="/youmail/user/myPersonalInfo.do">My Info</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/greeting/home.do">My Greetings</a>
+                                </td>
+                                <td>
+                                    <a href="/youmail/user/myPhones.do">My Phones</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/contact/contactList.do">My Contacts</a>
+                                </td>
+                                <td>
+                                    <a href="/youmail/user/alertOptions.do">My Alerts</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footerLinkUnit footerLinkSeparator" style="width:280px;">
+                        <table class="" style="width:280px;">
+                            <tr>
+                                <td class="footerLinkCat" colspan="2">Community &amp; Store</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/login/greetings.do">Featured Greetings</a>
+                                </td>
+                                <td>
+                                    <a href="/login/store/home.do">YouMail Store</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/login/greetings.do?greetingType=newest&amp;p_pg=1&amp;p_l=18">Newest Greetings</a>
+                                </td>
+                                <td>
+                                    <a href="/login/store/productSelect.do?productTypeId=10">Premium Transcriptions</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/login/channel/channels.do?type=featured&amp;p_pg=1&amp;p_l=15">Featured Channels</a>
+                                </td>
+                                <td> </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footerLinkUnit footerLinkSeparator" style="width:220px;">
+                        <table class="" style="width:220px;">
+                            <tr>
+                                <td class="footerLinkCat" colspan="2">Help &amp; Resources</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/help/home.do">Help Center</a>
+                                </td>
+                                <td>
+                                    <a href="/login/help/support.do">Contact Support</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/help/callForwarding.do">Call Fowarding</a>
+                                </td>
+                                <td>
+                                    <a href="/home/corp/learnMore.do">YouMail Features</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/youmail/help/speedDial.do">Speed Dial</a>
+                                </td>
+                                <td>
+                                    <a href="/home/demo.do">YouMail Tutorial</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footerLinkUnit footerLinkSeparator">
+                        <table class="footerLinkTable">
+                            <tr>
+                                <td class="footerLinkCat" colspan="2">YouMail</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/home/corp/about.do">About Us</a>
+                                </td>
+                                <td>
+                                    <a href="/home/corp/press.do">Press Releases</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/home/corp/terms.do">Terms Of Use</a>
+                                </td>
+                                <td>
+                                    <a href="/home/corp/contact.do">Contact Info</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="/home/corp/privacy.do">Privacy Policy</a>
+                                </td>
+                                <td>
+                                    <a href="/home/jobs/jobs.do">Jobs</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="copyright">
+© YouMail, Inc. 2006-2008.
+</div>
+            </div>
+        </div>
+     <!--  end div id=doc2  -->
+</body>
+</html>

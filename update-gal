@@ -1,0 +1,61 @@
+#!/usr/bin/env perl
+
+use strict;
+use Net::SFTP::Foreign;
+use WWW::Mechanize;
+#use HTML::TokeParser;
+
+my $skip_csv = 0;
+
+my $password = 'L3><ic0n';
+#my $password = shift(@ARGV);
+#die("Use: update_gal [password]") unless $password;
+
+my %servers = (
+    'stl' => '10.230.208.20',
+    'na' => '10.230.208.21',
+);
+
+
+unless($skip_csv){
+    # SFTP files from RTR to here.
+    print "Fetching latest csv files from smtp-rtr.gknstl.com\n";
+    my $rtr = Net::SFTP::Foreign->new('smtp-rtr.gknstl.com',
+        'user' => 'root',
+        'password' => $password,
+    );
+    foreach my $gal(keys %servers){
+        print "Fetching to_$gal.csv\n";
+        $rtr->get("/home/filetransfer/to_$gal.csv","/home/shadwickt/gal/csv/to_$gal.csv");
+        print "Transfer of to_$gal.csv complete.\n\n";
+    }
+    print "Closing connection to SMTP-RTR.\n";
+    $rtr->disconnect();
+    print "Connection to SMTP-RTR closed.\n\n";
+}
+
+foreach my $gal(keys %servers){
+    unless($skip_csv){
+        print "Connecting to $gal GAL Appliance at $servers{$gal}\n";
+        my $sftp = Net::SFTP::Foreign->new($servers{$gal},
+            'user' => 'root',
+            'password' => $password,
+        );
+        print "Pushing to_$gal.csv\n";
+        $sftp->put("/home/shadwickt/gal/csv/to_$gal.csv","/var/www/files/to_$gal.csv");
+    }
+
+    my $agent = WWW::Mechanize->new();
+    print "Authenticating against $gal GAL Appliance.\n";
+    $agent->get("http://$servers{$gal}/login.php");
+    $agent->form_name('login');
+    $agent->field('loginpw','123');
+    $agent->click();
+    print "Importing $gal csv file.\n";
+    $agent->get("http://$servers{$gal}/manual_importcsv.php");
+    print "Exporting $gal Active Directory.\n";
+    $agent->get("http://$servers{$gal}/manual_exportad.php");
+    print "Merging and updating contacts.\n";
+    $agent->get("http://$servers{$gal}/manual_importcontacts.php");
+    print "Update for $gal GAL completed.\n\n";
+}

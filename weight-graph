@@ -1,0 +1,249 @@
+#!/usr/bin/env perl
+
+use strict;
+use Math::Round;
+
+my $image_path = '/home/shadwickt/Desktop/rrd-test';
+my $foot = 12; # 12 inches in a foot.  Duh.
+
+my $height = (5 * $foot) + 10;
+my $age = 32;
+my $gender = 'M';
+
+my @graphs = (
+	{
+		'start' => time() - (60*60*24*14), # 2 weeks
+		'title' => "Numbski's Weight over 2 Weeks",
+		'filename' => 'weight.png',
+		'alt_autoscale' => 0,
+		'alt_autoscale_max' => 0,
+		'rigid' => 1,
+		'lower_limit' => 160,
+		'upper_limit' =>200,
+	},
+	{
+		'start' => time() - (60*60*24*90), # 3 months
+		'title' => "Numbski's Weight over 3 Months",
+		'filename' => '3-month-weight.png',
+		'alt_autoscale' => 0,
+		'alt_autoscale_max' => 0,
+		'rigid' => 0,
+		'lower_limit' => 0,
+		'upper_limit' =>0,
+	},
+);
+
+# This object was once inside the following foreach loop.
+# If I were to ever put this out for public consumption, it might
+# need to go back in there in case graphs came from different
+# rrd source files.  For now though....screw it. :)
+use RRDTool::OO;
+my $rrd = RRDTool::OO->new(
+	'file' => "$image_path/new-weight.rrd",
+	'strict' => 0, # Allow me to use grid-dash or imgformat, SVG
+);
+my $rrd_info = $rrd->info();
+my $last_update = scalar(localtime($rrd_info->{'last_update'}));
+$last_update =~ s/:/\\:/g;
+my $current_weight = $rrd_info->{'ds'}->{'weight'}->{'last_ds'};
+my $bmi = round(703 * ($current_weight/($height**2)));
+my $bmr;
+if($gender eq 'M'){
+	$bmr = round(66 + (6.23 * $current_weight) + (12.7 * $height) + (6.8 * $age));
+}
+else{
+	$bmr = round(655 + (4.35 * $current_weight) + (4.7 * $height) - (4.7 * $age));
+}
+
+my $status;
+if($bmi <= 17.5){
+	$status = 'Anorexic';
+}
+elsif($bmi > 17.5 and $bmi <= 18.5 ){
+	$status = 'Underweight';
+}
+elsif($bmi > 18.5 and $bmi <= 25 ){
+	$status = 'Optimal';
+}
+elsif($bmi > 25 and $bmi <= 30 ){
+	$status = 'Overweight';
+}
+elsif($bmi > 30 and $bmi <= 40 ){
+	$status = 'Obese';
+}
+elsif($bmi > 40 ){
+	$status = 'Morbidly Obese';
+}
+else{
+	# This should never happen...
+	$status = 'Status Unknown';
+}
+
+$rrd->option_add("graph", "pango_markup");
+$rrd->option_add("graph", "grid_dash");
+
+foreach my $graph(@graphs){
+
+
+	my $options = [
+		'pango_markup' => undef,
+		'imgformat' => 'PNG',
+		'image' => "$image_path/".$graph->{'filename'},
+		'title' => '<span font_family="verdana">'.$graph->{'title'}.'</span>',
+		'vertical_label' => 'Weight in Pounds',
+		'start' => $graph->{'start'},
+		'end' => time(),
+		'step' => 1,
+		'slope_mode' => undef,
+#		'grid_dash' => '1:0', # 1 on, zero of - ie, solid (rrdtool 1.4 only).
+		'color'     => {
+			'back' => '#0a113c', #purple background.
+			'font' => '#c6cdf3',
+			'shadeb' => '#9999cc',
+			'canvas' => '#ccffff', # Light blue graph canvas
+			'grid' => '#ccffff',
+		},
+		
+		# Main weight area.
+		'draw' => {
+			'type'      => 'area',
+			'color'		=> 'd9ba7f', # Inconsistent, I know.  It wants a pound sign above, but not here.
+			'dsname'    => 'weight',
+			'name'		=> 'my_weight',
+			'cfunc'     => 'LAST',
+			'legend' 	=> 'Body Weight			',
+		},
+
+		# Darker outline for the main weight area.
+		'draw' => {
+			'type'		=> 'line',
+			'color'		=> 'bd8e33',
+			'dsname'	=> 'weight',
+			'cfunc'		=> 'LAST',
+		},
+
+		# Main lean mass area.
+		'draw' => {
+			'type'      => 'area',
+			'color'		=> '6699cc', # Inconsistent, I know.  It wants a pound sign above, but not here.
+			'dsname'    => 'lean',
+			'name'		=> 'my_lean',
+			'cfunc'     => 'LAST',
+			'legend'	=> 'Lean Mass\\n',
+		},
+		
+		# Darker outline for the lean mass area.
+		'draw' => {
+			'type'		=> 'line',
+			'color'		=> '2a649f',
+			'dsname'	=> 'lean',
+			'cfunc'		=> 'LAST',
+		},
+				
+		# vdef for calculating average weight
+		'draw' => {
+			'type' => 'hidden',
+			'name' => 'current_weight',
+			'vdef' => 'my_weight,LAST'
+		},
+
+		# Work out body fat percentage from entered values.
+		'draw' => {
+			'type' => 'hidden',
+			'name' => 'fat_percentage_cdef',
+			'cdef' => "my_lean,my_weight,/,1,-,-1,*,100,*",
+		},
+		'draw' => {
+			'type' => 'hidden',
+			'name' => 'fat_percentage',
+			'vdef' => "fat_percentage_cdef,LAST",
+		},
+
+		# vdef for calculating average weight
+		'draw' => {
+			'type' => 'hidden',
+			'name' => 'average_weight',
+			'vdef' => 'my_weight,AVERAGE'
+		},
+
+		# vdef for calculating max weight
+		'draw' => {
+			'type' => 'hidden',
+			'name' => 'max_weight',
+			'vdef' => 'my_weight,MAXIMUM'
+		},
+
+
+		# Format the legend.
+		'comment' => '<span font_family="verdana" weight="bold">Body Fat Percentage\:</span>  ',
+		'gprint' => {
+			'draw' => 'fat_percentage',
+			'format'    => '%0.1lf%S%%\t\t',
+		},
+		'comment' => "<span font_family=\"verdana\" weight=\"bold\">BMR\\\:</span>  $bmr\\l",
+
+		'comment' => '<span font_family="verdana" weight="bold">Current Weight\:   </span>',
+		'gprint' => {
+			'draw' => 'current_weight',
+			'format'    => '\t %0.1lf%Slbs\t\t',
+		},
+		
+		'comment' => "<span font_family=\"verdana\" weight=\"bold\">BMI\\\:</span>    $bmi\\l",
+
+		'comment' => '<span font_family="verdana" weight="bold">Average Weight\:</span>  ',
+		'gprint' => {
+			'draw' => 'average_weight',
+			'format'    => '\t %0.2lf %Slbs\t',
+		},
+		'comment' => "<span font_family=\"verdana\" weight=\"bold\">Status\\\:</span>\\l",
+
+
+		'comment' => '<span font_family="verdana" weight="bold">Maximum Weight\:</span>  ',
+		'gprint'  => {
+			'draw' => 'max_weight',
+			'format'    => '%9.2lf %Slbs\t',
+		},
+		'comment' => "$status\\l",
+		'comment' => "<span font_family=\"verdana\" weight=\"bold\">Last Updated\\\:</span> $last_update",
+	];
+
+
+
+	# These options get unshifted because they need to be in
+	# the array *before* any of the draw commands.
+	if($graph->{'alt_autoscale'}){
+		unshift(@$options,('alt_autoscale' => undef));
+	}
+	elsif($graph->{'alt_autoscale_max'}){
+		unshift(@$options,('alt_autoscale_max' => undef));
+	}
+	elsif($graph->{'rigid'}){
+		unshift(@$options,('rigid' => undef));
+		if($graph->{'upper_limit'}){
+			unshift(@$options,('upper_limit' => $graph->{'upper_limit'}));
+		}
+		if($graph->{'lower_limit'}){
+			unshift(@$options,('lower_limit' => $graph->{'lower_limit'}));
+		}
+	}
+	$rrd->graph( @$options );
+}
+
+# These should only be needed for debugging.
+#require Data::Dumper;
+#print Data::Dumper::Dumper($rrd_info);
+
+#print "Current Weight: $current_weight\n";
+#print "BMI: $bmi\n";
+#print "BMR: $bmr\n";
+
+use Net::SFTP::Foreign;
+
+print "Calling Moogle...\n";
+my $sftp = Net::SFTP::Foreign->new('hksilver.net',
+	'user' => 'numbski',
+);
+print "Uploading the 2 Week Image\n";
+$sftp->put("$image_path/weight.png",'/home/numbski/public_html/static/img/weight.png');
+print "Uploading the 3 Month Image\n";
+$sftp->put("$image_path/3-month-weight.png",'/home/numbski/public_html/static/img/3-month-weight.png');

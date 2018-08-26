@@ -1,0 +1,49 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use LWP::UserAgent;
+require LWP::Authen::OAuth;
+
+my $ua = LWP::Authen::OAuth->new(
+  'oauth_consumer_key' => '3f7661c5e85d4e61821d5d4503753bd4',
+  'oauth_consumer_secret' => 'cbb04dd0b755489f9378e8be12217e41',
+    'oauth_token' => '7e74b7ad1433915e462b5ef206eb540b',
+    'oauth_token_secret' => '4f5b833c83779fb35c78e89c91321dae',
+);
+$ua->cookie_jar(
+            {
+                'file' => "$ENV{HOME}/.cookies.txt"
+             }
+);
+$ua->timeout(10);
+$ua->env_proxy;
+
+# Allow posts to redirect.
+push @{ $ua->requests_redirectable }, 'POST';
+
+my $response_format = 'json';
+my $api_version = '1';
+my $api_base_url = "https://api.fitbit.com";
+my $info_get_url = "/$api_version/user/-/profile.$response_format";
+my $activity_post_url = "/$api_version/user/-/activities.$response_format";
+
+my $request = $ua->post( $api_base_url.$info_get_url,
+#  [
+#    'oauth_token' => '7e74b7ad1433915e462b5ef206eb540b',
+#    'oauth_token_secret' => '4f5b833c83779fb35c78e89c91321dae',
+#  ],
+);
+die $request->as_string if $request->is_error;
+
+$request = $ua->post( $api_base_url.$activity_post_url,
+  [
+    'activityId' => '17151',
+    'startTime' => '12:00',
+    'durationMillis' => '86400000',
+    'date' => '2014-07-28',
+    'distance' => '25195',
+    'distanceUnit' => 'Steps',
+  ],
+);
+die $request->as_string;# if $request->is_error;

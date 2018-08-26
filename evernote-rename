@@ -1,0 +1,10 @@
+#!/usr/bin/env perl
+use strict;
+
+die("No arguments passed!") unless scalar(@ARGV);
+
+#print $ARGV[0];
+#exit;
+$ARGV[0] =~ m/(\d\d\d\d)-(\d\d)-(\d\d)/;
+die("No date found in note title!") unless ($1 && $2 && $3);
+print "$1$2$3 - USAA Insurance \(Automobile Policy Packet\)";

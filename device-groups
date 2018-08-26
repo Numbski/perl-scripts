@@ -1,0 +1,54 @@
+#!/usr/bin/env perl
+
+use strict;
+
+my $groups = 'NetOps Reuters Ticknet NetOpsIP - Cisco 2960 NetOpsIP - TR2 
+NetOps FNS CPE - COIN A Reuters XNET  NetOpsIP - VEQ 
+NetOpsIP - MIT NetOpsIP - ALD NetOpsIP - NJ3 
+NetOps - 76K Non-Han NetOpsIP - Juniper MX960 L2MSE NetOpsIP - LO4 
+NetOps FNS CPE - COIN B NetOpsIP - DAN NetOpsIP - Foundry 
+NetOpsIP - Cisco 3400 - IPSLA NetOpsIP - FR4 NetOpsIP - CE 
+NetOpsIP - ML2 NetOpsIP - FOUNDRY NetOpsIP - Cisco 7600 - All 
+NetOpsIP - RAD NetOpsIP - DC2 NetOpsIP - Cisco 7600 s72033 
+NetOpsIP - Cisco 7600 rsp72043 NetOpsIP - Juniper_l2circuits NetOpsIP - Cisco 7604 
+Terminal Servers NetOpsIP - DC3 NetOps Reuters 
+NetOpsIP - OC2 NetOps - BL2 India  NetOpsIP - NJ1 
+NetOpsIP - SC8 NetOpsIP - Cisco 7500 NetOps 
+NetOpsIP - SG9 NetOpsIP - SE2 NetOpsIP - FT3 
+NetOpsIP - NJ2 NetOps FNS - Arista Coin-SFTI-2 
+NetOpsIP - SG8 NetOpsIP - Juniper EX4200 NetOpsIP - Juniper M160 
+Coin-SFTI NetOpsIP - SFO NetOps - IPMux 
+NetOpsIP - ATX NetOpsIP - Juniper M40 NetOpsIP - PHY 
+NetOpsIP - MMD NetOpsIP - Juniper M20 NetOpsIP - 3PX 
+NetOpsIP - PRX NetOpsIP - AMX NetOpsIP - SC4 
+NetOpsIP - SL6 NetOpsIP - SC5 NetOpsIP - SEL 
+NetOpsIP - BO2 Ports America NetOpsIP - BO1 
+NetOpsIP - SJQ NetOpsIP - UK1 Randstad 
+NetOpsIP - CHD NetOpsIP - Cisco 7609 NetOpsIP - Cisco 7613 
+NetOps - MRVLD1600 NetOpsIP - CH3 NetOpsIP - TNC 
+NetOpsIP - Cisco CRS  NetOps FNS - LLPE 4500 COIN A NetOpsIP - CHQ 
+WamNet NetOpsIP - SSD IVCI 
+NetOps - BL1 India NetOps FNS - LLPE 4500 COIN B NetOpsIP - DAQ 
+NetOpsIP-E-Cisco-1 NetOpsIP - LO6 NetOps-MRV 
+NetOpsIP - LO1 NetOpsIP-E-Foundry NetOpsIP-N-Foundry 
+NetOpsIP - DA1 NetOpsIP - Cisco 12416/PRP NetOpsIP-N-Juniper 
+NetOpsIP - DEN NetOps - Egate NetOpsIP - UK5 
+NetOps - Juniper SBR m20 NetOpsIP-N-Cisco NetOpsIP - JUNIPER 
+SVL_12k_MAINT NetOpsIP - NYD NetOps-Coin-B 
+NetOps FNS CPE - OFFNET  NetOpsIP-EMEA NetOpsIP - Cisco 7606 
+NetOpsIP-US NetOpsIP - CISCO SVL_7600_MAINT 
+NetOps - Corvil NetOpsIP - Cisco Guard Cisco ES switches 
+NetOpsIP - BOL NetOpsIP - HOU NetOpsIP - 1EV 
+NetOpsIP - LA1 NetOpsIP - NYR NetOps - Juniper m7i m5 
+NetOpsIP - Mgmt Connectivity NetOpsIP-E-Juniper NetOpsIP-N-Arbor 
+NetOpsIP - PAX NetOps FNS - LLPE 4500 NetOpsIP - Cisco 2500 
+NetOpsIP - LAQ NetopsIP - DCK NetOpsIP - Cisco 3600 
+NetOpsIP - Cisco 3400 NetOpsIP - STL NetOpsIP - Cisco 2600 
+NetOpsIP - SY3 NetOpsIP - LNX NetOpsIP - Juniper EX3200 
+NetOpsIP - LAY SVL_MX960_MAINT NetOps-Coin 
+NetOpsIP - SG1'; 
+
+$groups =~ s/\s+NetOpsIP/\nNetOpsIP/g;
+
+print $groups;
+exit;

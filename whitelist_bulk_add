@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use strict;
+use Numbski;
+use DBI;
+use SQL::Abstract;
+
+my $filepath = shift(@ARGV) or die("Please pass a csv of rules.");
+
+print "Opening file.\n";
+# Create a file object, read it in.
+my $file = Numbski->new(
+        {
+                'path' => $filepath,
+        }
+);
+$file->read_file;
+print "File read.\n";
+
+# Split each line out into an array entry.
+my @file_lines = split(/\n/,$file->contents);
+print "File split.\n";
+
+# Create our database connection.
+my $database_handle = DBI->connect('DBI:mysql:postfix:192.168.100.41','root','L3><ic0n');
+my $sql = SQL::Abstract->new;
+
+print "Beginning iteration.\n";
+foreach my $line(@file_lines){
+    my $row;
+    chomp($line);
+#    ($row->{'username'},$row->{'value'},$row->{'comment'}) = split(/\,/,$line);
+#    die("Incomplete entry for this line?\n$line") unless (($row->{'username'} =~ /@/) && $row->{'value'});
+    $row->{'username'} = 'john.michels@usa.gknaerospace.com';
+    $row->{'value'} = $line;
+    $row->{'preference'} = 'whitelist_from';
+#    print "Adding: $row->{'username'}, $row->{'preference'}, $row->{'value'}, $row->{'comment'}\n";
+    my($insert_statement,@insert_bind) = $sql->insert('spamassassin',$row);
+    my $insert_sth = $database_handle->prepare($insert_statement);
+    $insert_sth->execute(@insert_bind);
+}

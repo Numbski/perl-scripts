@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+use strict;
+
+my $tmp = '/var/tmp';
+
+my @pdfs;
+foreach(@ARGV){
+	if(-f $_){
+		push(@pdfs,$_);
+	}
+	else{
+		warn("No such file found - $_, skipping.");
+	}
+}
+exit("No pdfs found.  Exiting.") unless scalar(@pdfs);
+
+foreach my $pdf(@pdfs){
+	$pdf =~ /(\w+?)\.pdf$/i;
+	print "$pdf: $1\n";
+	mkdir("$tmp/$1");
+	`/usr/bin/env pdftoppm $pdf $tmp/$1/$1`;
+	opendir(DIR,"$tmp/$1") or die("Can't open the temp directory $tmp/$1: $!");
+
+	my @ppm_files;
+	while(defined(my $file = readdir(DIR))){
+		next if (-d "$tmp/$1/$file");
+		push(@ppm_files,$file) if ($file =~ /\.ppm$/i);
+	}
+	die("There were no ppm files output from pdftoppm!") unless scalar(@ppm_files);
+	foreach my $ppm(sort @ppm_files){
+		`/usr/bin/env gocr $tmp/$1/$ppm > $tmp/$1/$ppm.txt`;
+		`/usr/bin/env cat $tmp/$1/$ppm.txt >> $1.txt`;
+		unlink("$tmp/$1/$ppm.txt");
+		unlink("$tmp/$1/$ppm");
+	}
+	unlink("$tmp/$1");
+}

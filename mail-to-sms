@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Email::Simple;
+use Email::MIME;
+use Net::SMTP;
+
+my $smtp = Net::SMTP->new('localhost');
+$smtp->mail('tony@hksilver.net');
+#$smtp->to('page-tony@hksilver.net');
+$smtp->data();
+$smtp->datasend('To: page-tony@hksilver.net'."\n");
+$smtp->datasend('Subject: Order Executed from Laptop!'."\n");
+$smtp->datasend("\n");
+$smtp->datasend("You are getting this because QT Bitcoin Trader saw a price change and acted on it.");
+$smtp->dataend();
+$smtp->quit();
+exit;

@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+use strict;
+#use Image::OCR::Tesseract 'get_ocr';
+my $log = '/Users/tshadwick/.hazel.log';
+open (FILE, '>>'.$log) or die("Cannot open $log for write:  $!");
+print FILE "test";
+close(FILE);
+exit(0);

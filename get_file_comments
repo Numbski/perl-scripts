@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Mac::AppleScript qw(RunAppleScript);
+my $file = shift(@ARGV);
+
+#RunAppleScript (qq(tell application "Finder\nactivate\nend tell")) 
+#  or die("Call Failed: " $@);
+
+RunAppleScript(
+<<"EOT"
+tell application "Finder"
+ activate
+ do shell script ("echo " & the comment of (POSIX file $file))
+end tell
+EOT
+) or die("Call Failed: $@");

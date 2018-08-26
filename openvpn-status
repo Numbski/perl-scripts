@@ -1,0 +1,54 @@
+#!/usr/bin/env perl
+
+use strict;
+use Net::Telnet;
+
+
+my $telnet = new Net::Telnet(
+    -host => '172.16.30.1',
+    -input_record_separator => "\r",
+    -port => '5555',
+);
+my $log = $telnet->input_log('./openvpn.log');
+
+my $output;
+
+print "Connecting...\n";
+my @connect = $telnet->open();
+print "Connected:  @connect\n";
+
+print "Waiting for password prompt.\n";
+$telnet->waitfor('/ENTER PASSWORD:/');
+#print "Sending password.\n";
+my @ok = $telnet->cmd(
+    'string' => 'watermark',
+#    'output' => \$output,
+    'prompt' => '/^$/',
+);
+#$telnet->print('watermark'+"\n");
+print "Password sent.\n";
+
+#print "Waiting for blank line.\n";
+$telnet->waitfor('/^$/');
+
+#print "Changing prompt.\n";
+#$telnet->prompt('/^$/');
+print "Sending status request.\n";
+$telnet->cmd(
+    'string' => 'status',
+    'input_record_separator' => "\n",
+#    'output' => \$output,
+    'prompt' => '/^$/',
+);
+#$telnet->print('status');
+print "Status report requested.  Printing return.\n";
+
+print $output;
+
+$telnet->print('quit');
+my @output = $telnet->getlines();
+foreach my $line(@output){
+    print $line;
+}
+
+$telnet->close();

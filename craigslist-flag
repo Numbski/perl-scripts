@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use strict;
+use LWP::UserAgent;
+
+my $post = shift(@ARGV) or die("Please pass the posting ID from Craigslist!");
+
+my @proxies = (7070,8080);
+
+ my $ua = LWP::UserAgent->new;
+ $ua->agent('Mozilla/4.0 (compatible ; MSIE 6.0; Windows NT 5.1)');
+ $ua->timeout(10);
+ #$ua->env_proxy;
+#$ua->proxy([qw(http https)] => 'socks://172.16.30.2:7070');
+ 
+ my $response = $ua->get("http://stlouis.craigslist.org/flag/?flagCode=16&postingID=$post");
+# my $response = $ua->get("http://www.whatismyip.com");
+ 
+ if ($response->is_success) {
+#     print $response->content;  # or whatever
+		print "Flagged locally.\n";
+ }
+ else {
+     die $response->status_line;
+ }
+ 
+ foreach my $port(@proxies){
+ 	$ua->proxy([qw(http https)] => "socks://172.16.30.2:$port");
+ 
+	my $response = $ua->get("http://stlouis.craigslist.org/flag/?flagCode=16&postingID=$post");
+# my $response = $ua->get("http://www.whatismyip.com");
+ 
+ 	if ($response->is_success) {
+#    	 print $response->content;  # or whatever
+		print "Flagged on port $port.\n";
+
+ 	}
+ 	else {
+     die $response->status_line;
+ 	}
+ }

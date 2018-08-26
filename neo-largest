@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use File::Find;
+ 
+if ($#ARGV < 1) {
+die "Usage: $0 <count> <dir> [dir ...]\n";
+}
+ 
+my $count = shift @ARGV;
+ 
+my %size;
+find(sub { $size{$File::Find::name} = -s if -f; }, @ARGV);
+my @sorted = reverse sort { $size{$a} <=> $size{$b} } keys %size;
+ 
+if (@sorted > $count) {
+splice @sorted, $count;
+}
+ 
+my @units = (' ', qw{ K M G T });
+for (@sorted) {
+my $u = int( log($size{$_}) / log(1024) );
+printf "%7.2f %sB %s\n", $size{$_}/1024**$u, $units[$u], $_;
+}

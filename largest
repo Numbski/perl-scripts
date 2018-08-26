@@ -1,0 +1,76 @@
+#!/usr/bin/env perl
+
+use File::Find;
+use Math::Round;
+
+my $path = shift or ( print( 'Usage: largest (path) ([number of files])
+Example: largest /var 15
+') && exit);
+
+my $count = shift;
+$count = 10 unless $count;
+exit unless $count;
+
+if(!-d $path){
+	print "Please pass a directory.\n";
+}
+
+
+print "Beginning search on $path, returning the top $count largest files.
+Depending upon how many files you have, this might take a while.  Please
+be patient.\n\n";
+find(
+	{
+	'wanted' => \&size,
+	'no_chdir' => 1
+	}, $path
+);
+
+my %files;
+
+sub size{
+	my @stat = stat($_);
+	$files{$_} = $stat[7];
+}
+
+my $i = 0;
+foreach my $file( sort{ $files{$b} <=> $files{$a} } keys %files ){
+	exit if ( $i == $count );
+	if($files{$file} > 1024 ){
+		# Convert to kilobytes
+		$files{$file} = ($files{$file}/1024);
+
+		if($files{$file} > 1024 ){
+			# Convert to megabytes.
+			$files{$file} = ($files{$file}/1024);
+
+			if($files{$file} > 1024 ){
+				# Convert to Gigabytes.
+				$files{$file} = ($files{$file}/1024);
+				$files{$file} = nearest(.01,$files{$file});
+				#print "$files{$file} G\t$file\n";
+				printf '%6s', "$files{$file}"; 
+				print " G\t$file\n";
+			}
+			else{
+				$files{$file} = nearest(.01,$files{$file});
+				#print "$files{$file} M\t$file\n";
+				printf '%6s', "$files{$file}"; 
+				print " M\t$file\n";
+
+			}
+		}
+		else{
+			$files{$file} = nearest(.01,$files{$file});
+			#print "$files{$file} k\t$file\n";
+			printf '%6s', "$files{$file}"; 
+			print " k\t$file\n";
+		}
+	}
+	else{
+		#print "$files{$file} b\t$file\n";
+		printf '%6s', "$files{$file}"; 
+		print " b\t$file\n";
+	}
+	$i++;
+}

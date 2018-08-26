@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+ 
+use strict;
+use POSIX;
+use Filesys::SmbClient;
+  
+
+
+local *FD;
+tie(*FD, 'Filesys::SmbClient');
+my $smb = new Filesys::SmbClient(username  => 'shadwickt',
+									password => 'gkn4oss2600!!!',
+									workgroup => 'GKNSTL',
+                                   debug     => 10);
+ print "$!\n\n";
+if(open(FD,'smb://xch-stl-01/C$/windows/system32/drivers/etc/hosts')){
+	print "File 1 opened.\n";
+}
+elsif(open(FD,'smb://xch-stl-01/C$/winnt/system32/drivers/etc/hosts')){
+	print "File 2 opened.\n";
+}
+else{
+	print "Can't open file:", $!, "\n";
+	exit;
+}
+while(<FD>) { print $_; }
+close(FD);
+ 
+# Read a file
+#my $fd = $smb->open('smb://xch-stl-01/C$/winnt/system32/drivers/etc/hosts', '0666');
+#my $fd = $smb->opendir('smb://xch-stl-01/c$');
+#die("Failed to open - $! $?") unless $fd;
+#print "fd is $fd, $!\n";
+
+#my $fs = $smb->fstat($fd);
+#print "Stat:\n$fs\n";
+#while (defined(my $l= $smb->read($fd))) {print $l; }
+#print($smb->read($fd));
+#$smb->close($fd);
+exit;

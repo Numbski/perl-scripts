@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use strict;
+use File::Find;
+
+# Nightly trash collection for SpamAssassin.  For whatever reason,
+# the milter just litters /tmp.  This is to fix that problem.
+my @files_to_remove;
+
+# We have to be root to do this.
+die("You must be root to run this.  Right now you are $>") unless $> eq 0;
+
+# First, we need to stop postfix so that no more mail is being accepted.
+`/etc/init.d/postfix stop`;
+
+# Wait a bit to let SpamAssassin settle down.
+sleep 15;
+
+# Now we need to get a listing of all of the tmp files.
+find(
+	{
+	'wanted' => \&match_spamassassin,
+	'no_chdir' => 1
+	}, '/tmp'
+);
+
+sub match_spamassassin{
+    if(/\/tmp\/\.spamassassin.*/){
+        push(@files_to_remove,$_);
+    }
+}
+
+# Ouch!
+my $i;
+
+# :)
+
+while($i < 15){
+    print $files_to_remove[$i];
+    $i++;
+}

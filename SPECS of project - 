@@ -1,0 +1,85 @@
+  14 lines Perl code needs very detailed commenting as well as what overall function is of the file.
+
+There is already comments for every 1-2 lines of code.
+
+WHAT NEEDS TO BE DONE:
+1. I want to get these 14 lines of Perl code commented again and more detailed
+since it is my impression that extra code has been inserted into the file after the commenting.
+
+2. Want to get detailed review what is the purpose/action of the file with code. 
+
+2.1) Especially am interested in knowing ift this file is to be used for - or could be used for - easily
+- to open a VPN connection
+
+2.2) If the code intention is to evade or hide in case that some specific circumstance occur/does not occur.
+If so, in what circmstances will the code do/not do the action - and what action is it it will do/or not do?
+
+2.3) What does this mean in realitity - and is this normal:
+"Exit immediately for every certificate depth other than 0."
+exit 0 unless ($DEPTH eq "0");
+
+2.4) Why does the code do this below - and is that normal legit action:
+# Strip the CN from the X509 identifier.
+$CN =~ /\/CN=(.*)$/i;
+$CN = $1;
+
+2.5) Is this "confighash" normal to have in such application?
+Ifr so, why is the information then stored in a hash file instead of a normal configuration file?
+my %confighash = ();
+if (-f "${General::swroot}/ovpn/ovpnconfig"){
+	&General::readhasharray("${General::swroot}/ovpn/ovpnconfig", \%confighash);
+	foreach my $key (keys %confighash) {
+		my $cn = $confighash{$key}[2];
+
+2.51) is the purpose of the "confighash" to read information (password or similar) that should not be read at all (by this file)?
+
+2.51) What is the purpose of the command "SWROOT" - and what does it do/allow/action taken being there?
+if (-f "${General::swroot}/ovpn/ovpnconfig"){
+
+2.6)  Why does the code "strip" the "CN" from the X509 Identifier?
+# Strip the CN from the X509 identifier.
+$CN =~ /\/CN=(.*)$/i;
+$CN = $1;
+
+
+if (-f "${General::swroot}/ovpn/ovpnconfig"){
+2.61) What does the "$CN" do as a command as such? is that normal?
+
+
+2.7)  Does this code load a different version of the program or a different file depending upon if it sees the VPN connection as already being used or that code alrady being used? if not, what does this part do?
+# Skip disabled connections.
+		next unless ($confighash{$key}[0] eq "on");
+
+		# Skip non-roadwarrior connections.
+		next unless ($confighash{$key}[3] eq "host");
+
+this file was extracted from the opensource app http://www.ipfire.org and it  is my impression that this file has been tampered with - along with other files.
+
+SPECS BELOW DO **NOT** NEED TO BE ANSWERED - BUT IF YOU DO ANSWER THEM - DETAILED - THEN you get
+ $25 EXTRA in bonus. 
+    You would need to download the 102 MB ISO file from http://www.ipfire.org and extract the files in order to answer the questions below.
+
+2.8) There is a file called "VMLinuz" that seems to start booting this program. I would like to have this file extracted so can see the code. The vmlinuz file doesnt need to be analuyzd/commented - but do extract it for me - and let me know if this is normal that all Linux programs uses a "VMLinuz" file to boot the programs and Operating system with?
+
+
+2.9) When program starts then sometimes it runs with "Runlevel 3" and sometimes with "Runlevel 6".
+Whivh folder and/or file name would contain the commands/code that determines what "runlevel"
+that it should run?
+
+2.91) What application/program do I need to use in order to extract/open that file?
+
+2.92) What application/program dp i need to use in order to extract/open the file VMLinuz to see
+inside the code?
+
+2.93) What other code files influences on "INITRD" file when booting? Which folder(s) are they located?
+
+2.94) Download www.ipfire.org ISO file and extract it - then answer:
+What files are being used when booting the ipfire app? Write a list of the first 10 files and their folders.
+
+==============
+Please write why you are the right coder for this project and what related experienced you have with perl code and commenting perl code as well as how many years?
+
+thanks
+
+
+

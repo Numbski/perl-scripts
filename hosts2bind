@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $file = '/Users/tshadwick/Downloads/hosts3';
+die("hosts file doesn't exist!") unless -e $file;
+
+my %domains;
+open(HOSTS, "$file") or die("Can't open file $file for read: $!");
+while(<HOSTS>){
+  /(\w+\.\w+)$/;
+  print "$1\n";
+}
+close(HOSTS);

@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+
+use Device::SerialPort;
+
+# Set up the serial port
+# 9600, 8N1 on the USB ftdi driver
+my $port = Device::SerialPort->new("/dev/tty.usbserial-A70061yk");
+$port->databits(8);
+$port->baudrate(9600);
+$port->parity("none");
+$port->stopbits(1);
+
+my $count = 0;
+while (1) {
+    # Poll to see if any data is coming in
+    my $char = $port->lookfor();
+
+    # If we get data, then print it
+    # Send a number to the arduino
+    if ($char) {
+		# In order to get the actual temperature, we need to divide
+		# 5 Volts by 10 bits, then multiply that by the value
+		# returned by the L34.  In practice, this is about .4882, or
+		# 500/1024 = .4882, then the output times that.
+#    	my $temp = $char * .4882;
+		my $temp = $char * (500/1024);
+    	$temp = sprintf("%.2f", $temp);
+		$time = localtime;
+		print "$time:\t$temp\n";
+#        exit;
+    } else {
+        sleep(1);
+#        $count++;
+#        my $count_out = $port->write("$count\n");
+#        print "Sent     character: $count \n";
+    }
+}

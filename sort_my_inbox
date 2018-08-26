@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Mail::Box::Manager;
+#use Mail::Message::timestamp;
+
+my $inbox = shift || $ENV{MAIL};
+my $newfolder = '/home/numbski/mail/2008';
+my $mgr = Mail::Box::Manager->new();
+
+my $inbox = $mgr->open( 'folder' => $inbox ) or die("$inbox: Unable to open: $!\n");
+my $newfolder = $mgr->open( 'folder' => $newfolder ) or die("$newfolder: Unable to open: $!\n");
+
+
+foreach my $msg ( sort { $a->timestamp <=> $b->timestamp } $folder->messages) )
+{
+#    my $to          = join( ', ', map { $msg->format } $msg->to );
+#    my $from        = join( ', ', map { $msg->format } $msg->from );
+#    my $date        = localtime( $msg->timestamp );
+#    my $subject     = $msg->subject;
+#    my $body        = $msg->body;
+
+# I want to leave my messages as-is, kthx.
+#    # Strip all quoted text
+#    $body =~ s/^>.*$//msg;
+
+#print "
+#From: $from
+#To: $to
+#Date: $date
+#Subject: $subject\n\n";
+
+#	if($counter > 10){
+#		exit;
+#	}
+#	else{
+#		print timestamp."\n";
+#		$counter++;
+#	}
+
+	if($msg->timestamp < 1230789600){ # 1230789600 is January 1, 2009
+		# Move the message.
+		print "Copying message dated ".localtime($msg->timestamp)." to $newfolder\n";
+		$mgr->copyMessage($newfolder,$msg);
+	}
+
+}
+$msg->close($newfolder);
+$msg->close($inbox);
+
+
+ # Create folder objects.
+# my $folder   = $mgr->open(folder => $ENV{MAIL});
+# my $message1 = $folder->message(0);
+# $mgr->copyMessage('Draft', $message);
+
+# my @messages = $folder->message(0,3);
+# $mgr->moveMessage('Outbox', @messages, create => 1 );
+# $mgr->close($folder);

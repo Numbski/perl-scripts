@@ -1,0 +1,68 @@
+#!/usr/bin/env perl
+
+use Numbski;
+use MIME::Base64;
+use strict;
+
+my $path = shift or die("Please provide a file to decode!");
+my $file = new Numbski(
+	{
+		'path' => $path,
+	}
+);
+$file->read_file;
+$file->dos_to_unix;
+
+
+
+# How many output files do we have?
+foreach my $output_file($file->contents =~ /Content-Disposition: .*?filename="(\S+?)"/g || $file->contents =~ /Content-Type: .*?name="(\S+?)"/g){
+    print "My output file is: $output_file\n";
+
+    # Unset the Input Record Separator 
+    local $/ = undef;
+
+    # Pull out our match data.  For whatever reason, it insists on coming out as a list rather than a scalar. :(
+#    my @base64_chunk =
+#	($file->contents =~ /Content-Type:.*?\nContent-Transfer-Encoding: base64\nContent-ID:.*?\nContent-Disposition: .*?filename="$output_file"(((.|\n)*?\n+)+(.|\n)*?)\n\n/i)||
+#	($file->contents =~ /Content-Type:.*?name="$output_file"\nContent-Transfer-Encoding: base64\nContent-ID:\s+\S+\n+((\S+?\n)+)/i);
+
+    my @base64_chunk =~ /((\S+:.*?\n)|(\S+:.*?(file)?name="$output_file"\s*\n))+\n+((\S+?\n)+)/ig;
+
+#($file->contents =~ /Content-Type:.*?\nContent-Transfer-Encoding: base64\nContent-ID:.*?\nContent-Disposition: .*?filename="$output_file"(((.|\n)*?\n+)+(.|\n)*?)\n\n/) ||
+#($file->contents =~ /Content-Type:.*?name="$output_file"\nContent-Transfer-Encoding: base64\nContent-ID:\s+\S+\n+(((.|\n)*?\n+)+\S*?)\n\n/i);
+#my @base64_chunk = ($file->contents =~ /(Content-Type: .*?name="$output_file"\nContent-Transfer-Encoding: base64\n)/g);
+   # print "My output file is now: $output_file\n";
+
+    print @base64_chunk;
+    die;
+
+    # Since it comes out as a list, we have to test for the data like a list.
+    my $encoded_data = $1;
+#   if(scalar(@base64_chunk)){
+   if($1){
+        print "$output_file will be processed.\n";
+    }
+    else{
+        print "$output_file will NOT be processed.\n";
+        next;
+    }
+
+    # Convert that array to a scalar.
+    # Use while/shift instead of foreach to save memory use.
+    # This way the array gets smaller as the scalar gets larger.
+#    while(@base64_chunk){
+#        $encoded_data .= shift(@base64_chunk);
+#    }
+
+
+    # Remove any whitespaces or newlines from the encoded data.
+    $encoded_data =~ s/(\s|\n)//g;
+
+    # Open the file in PWD and spit it out in binmode.
+    open (FILE, ">".$output_file) or die("Cannot open file ".$output_file." for write: $!");
+    binmode FILE;
+    print FILE decode_base64($encoded_data);
+    close FILE;
+}
+    $/ = "\n";

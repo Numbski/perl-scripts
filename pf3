@@ -1,0 +1,270 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use DateTime;
+
+my $inputFile = shift(@ARGV);
+
+#
+#   IMPORTANT: READ THIS IN ITS ENTIRETY. YOU ARE THE FINAL AUTHORITY IN DETERMINING
+#   WHAT HAPPENS ON YOUR COMPUTER. YOU SHOULD READ ALL DOCUMENTATION PERTAINING TO
+#   THE INSTALLATION AND USE OF ALL SOFTWARE YOU INSTALL AND USE AND SHOULD MAKE 
+#   REGULAR AND COMPLETE BACKUPS OF YOUR IMPORTANT DATA.
+#
+#   PF - Point & Figure Charting
+#
+#   -------------------------LEGAL INFO--------------------------------------------
+#
+#   This script is Copyright (C) 1999  Jim Michael and XMLWorks All Rights Reserved
+#
+#   This is version 1.0.0 (11 Jan 1999)
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+#   Download and parsing script for www.yahoo.com. This script will most
+#   assuredly NOT work with other quote sources. Contact us for assistance
+#   if you would like to use this script for other quote sources.
+#
+#   ------------------------------USAGE INFO-------------------------------------
+#
+#   USAGE: perl pf
+#
+#   This program is written for input files with the format:
+#
+#	ticker,last,date,time,change,low,high,vol
+#
+#   If your file has a different format then you will need to modify the pf subroutine.
+#   The line you would modify is line #115 looks like this:
+#
+#    ($ticker,$last,$date,$time,$change,$low,$high,$vol) = split /,/; # MODIFY AS NEEDED
+#
+#   The $last variable is the one that will be used to construct the P&F chart. Here is 
+#   an example for an input file with only date and last fields:
+#
+#    ($date,$last) = split /,/; # MODIFY AS NEEDED
+#
+#   Note to Windows NT/95 users:
+#
+#   If you are on a Win32 platform (NT or Windows95/98) then we recommend that you
+#   use Gurusamy Sarathy's Standard Win32 port of Perl 5.04 or higher. The ActiveState port
+#   is newer, but this version is known to be stable and included all of the modules used
+#   by QuoteMonster. You may download the free perl interpreter from
+#   http://www.perl.com/ or see the XMLWorks website for location of the binary download.
+#
+#
+#   ----------------------------------SUPPORT INFO--------------------------------------
+#
+#   Since this is free software, no support is offered. However, suggestions for improvements
+#   to the program are always welcome. If you are using the program and find it useful,
+#   please drop us a line sometime. We would enjoy hearing from you.
+#
+#   Snail Mail: XMLWorks
+#               PO Box 941124
+#               Atlanta, GA 31141-1124
+#               USA 
+#   Web: http://www.xmlworks.com/
+#
+#   Custom modifications to this script or other custom Internet programming
+#   in Perl are also available.
+#
+#
+# ----------------------- Enter your custom settings here ----------------------------- #
+#
+# Instructions:
+#
+# Lines with comments are preceded by the hash symbol (#). The following lines assign
+# values to variables. Some values are numerical and some are not. The numerical values
+# are not enclosed in single quotes, the non-numerical entries are enclosed in
+# single quotes ('like this'). All perl statements must end with a semicolon (;) and a
+# comment may follow on the same line by placing the hash symbol (#) before the comment. 
+
+my $ticker        = '^OEX';              # ticker of the security being plotted
+#my $inputFile     = 'quote.txt';         # temporary storage file
+my $pfFile        = 'mtgoxUSD.html';          # file to store HTML
+my $boxsize       = 10;                  # Each X or O represents this amount
+my $multiplier    = 1;                 # price will be multiplied by this number
+my $reversal      = 30;                  # price move which results in change of direction
+my $output        = 0;                   # 1 for output to screen, 0 for output to HTML
+
+# //////////////// DO NOT EDIT ANYTHING BELOW THIS LINE \\\\\\\\\\\\\\\\\\\\ #
+
+print "Beginning run.\n";
+die("Possible problem with file.") unless point_figure($inputFile,$pfFile,$boxsize,$reversal);
+
+sub point_figure(){
+  my($in,$out,$boxsize,$reversal) = (shift,shift,shift,shift);
+  die('No $in') unless $in;
+  die('No $out') unless $out;
+  die('No $boxsize') unless $boxsize;
+  die('No $reversal') unless $reversal;
+	my ($i,$miny,$maxy,$y,$oldP,@g);
+#	my $in = shift;
+#	my $out = shift;
+#	my $boxsize = shift; 
+#	my $reversal = shift;
+	my $direction = 0;
+	$miny = 500;
+	$maxy = 0;
+	my $x = 1;
+	my $boxes;
+	my $newP;
+	open (IN,$in) || die("Can't open input file $in - $!");
+
+        my $final_epoch;
+	while (<IN>) {
+		chomp;
+#  print "$_\n";
+#		my ($ticker,$last,$date,$time,$change,$low,$high,$vol) = split /,/; # MODIFY AS NEEDED 
+		my ($epoch,$last,$btc) = split /,/; # MODIFY AS NEEDED 
+#next unless $epoch >= 1385856000; #after december 1, 2013
+
+                $final_epoch = $epoch;
+		# Multiply our current price against the multiplier.
+		$last *= $multiplier;
+
+		# If direction is true.
+		if ($direction == 1) {
+			# and our current price is greater than the old price
+			if ($last > $oldP) {
+				# Then new price is our box size times
+				# the result of our current price divided
+				# by that box.  This is a no-op...?
+				# apart from the int() anyway.
+				$newP = $boxsize * int($last/$boxsize);
+
+				
+				# Loop foreach $i= the old price+box size (+10) 
+				# while $i is less than the new price+box,
+				# incrementing the $i by the box size?
+				for ($i = $oldP+$boxsize; $i < $newP+$boxsize; $i+=$boxsize) {
+					$maxy = $i if ($i > $maxy);
+#  print "maxy is $maxy\n";
+					$g[$x][$i] = 'x';
+				}
+				$oldP = $newP;			
+			}
+			elsif ($last < $oldP) {
+				$newP = $boxsize*int($last/$boxsize);
+				# If the current price is lower than the old
+				# price AND greater than our reversal
+				# threshold
+				if ($oldP - $newP > $reversal) {
+					# Start a new column.
+					$x++;
+					# Reverse direction?
+					$direction = -1;
+					for ($i = $oldP-$boxsize; $i > $newP-$boxsize; $i-=$boxsize) {
+						$miny = $i if ($i < $miny);
+						$g[$x][$i] = 'o';
+					}
+					$oldP = $newP;
+				}
+			}
+		}
+		elsif ($direction == -1) {
+			if ($last < $oldP) {
+				$newP = $boxsize * int($last/$boxsize);
+				for ($i = $oldP-$boxsize; $i > $newP-$boxsize; $i-=$boxsize) {
+					$miny = $i if ($i < $miny);
+					$g[$x][$i] = 'o';
+				}
+				$oldP = $newP;
+			}
+			elsif ($last > $oldP) {
+				$newP = $boxsize * int($last/$boxsize);
+				if ($newP - $oldP > $reversal) {
+					$x++;
+					$direction = 1;
+					for ($i = $oldP+$boxsize; $i < $newP+$boxsize; $i+=$boxsize) {
+						$maxy = $i if ($i > $maxy);
+						$g[$x][$i] = 'x';
+					}
+					$oldP = $newP;
+				}
+			}
+		}
+		else {
+			if (defined($oldP)) {
+				if ($last > $oldP) {
+					$newP = $boxsize * int($last/$boxsize);
+					if ($newP > $oldP) {
+						$direction = 1;
+						for ($i = $oldP; $i < $newP+$boxsize; $i+=$boxsize) {
+							$maxy = $i if ($i > $maxy);
+							$g[$x][$i] = 'x';
+						}
+					}
+				}
+				elsif ($last < $oldP) {
+					$newP = $boxsize * int($last/$boxsize);
+					if ($newP < $oldP) {
+						$direction = -1;
+						for ($i = $oldP; $i > $newP+$boxsize; $i+=$boxsize) {
+							$miny = $i if ($i < $miny);
+							$g[$x][$i] = 'o';
+						}
+					}
+				}
+			}
+			else {
+				$oldP = $boxsize*int($last/$boxsize);
+			}
+		}
+	}
+	close IN;
+	my $maxx = $x;
+
+  my $dt = DateTime->from_epoch( 'epoch' => $final_epoch );
+  $dt->set_time_zone( 'America/Chicago' );
+	open (OUT,">$out") || die("Can't open output file $out - $!");
+	print OUT '<html><head><META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE"><META HTTP-EQUIV="REFRESH" CONTENT="30"></head><body>';
+print OUT 'Last Updated: '. $dt->mdy('/') .' ' .$dt->hms .'<br/><table>';
+	my $count = 0;
+	my $g = '';
+	if ($output) {
+#		system ('cls');
+#		system ('clear');
+	}
+#  print "maxy: $maxy\nminy: $miny\nboxsize: $boxsize\n";
+#  print 'for ($y = $maxy; $y > $miny-$boxsize; $y-=$boxsize) {';
+	for ($y = $maxy; $y > $miny-$boxsize; $y-=$boxsize) {
+#  print "Got a y: $y\n";
+		# Dollar amount.
+		#print OUT "$y, ";
+		print OUT "<tr>\n<td>$y</td>\n";
+		if ($output) {
+			print "<tr>\n<td>$y</td>\n";
+		}
+		for ($x = 1; $x < $maxx + 1; $x++) {
+			# On the x-axis, use a space unless an x or o
+			# is defined here.
+			$g[$x][$y] = '<td>&nbsp;</td>' unless (defined($g[$x][$y]));
+			$g .= '<td>'.$g[$x][$y].'</td>';
+		}
+		$g =~ s/ *$//g;
+		$g .= "</tr>\n";
+		print OUT "$g\n"; #
+		if ($output) {
+			print "$g\n";
+		}
+		$g = '';
+	}
+  print OUT '</table></body></html>';
+	close OUT;
+	return 1;
+}
+
+#unless pf($inputFile,$pfFile,$boxsize,$reversal){
+#unless(0){
