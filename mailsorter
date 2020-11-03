@@ -1,0 +1,51 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Mail::Box::Manager;
+#use Mail::Message::timestamp;
+
+my $inbox = shift || $ENV{MAIL};
+my $newfolder = '/home/numbski/mail/2010';
+my $mgr = Mail::Box::Manager->new();
+
+$inbox = $mgr->open( 'folder' => $inbox ) or die("$inbox: Unable to open: $!\n");
+
+# Open the new folder
+my $destination = $mgr->open( 'folder' => $newfolder, 'access' => 'rw' ) or die("$newfolder: Unable to open: $!\n");
+
+my $msg_count = 0;
+
+MESSAGE:
+for my $msg ( sort { $a->timestamp <=> $b->timestamp } $inbox->messages)
+{
+	print "Message dated ". $msg->timestamp."\n";
+	next unless ($msg->timestamp > 1262325601 );
+
+	my $reply_to = $msg->get('reply-to');
+	if($reply_to){
+		if($reply_to =~ /noreply\@facebookmail.com/){
+			print "Facebook message.  Skipping.\n";
+			next MESSAGE;
+		}
+	}
+
+	# Move the message.
+	print "Copying message dated ".localtime($msg->timestamp)." to $newfolder\n";
+	$mgr->copyMessage($destination,$msg);
+
+	if($msg_count > 100){
+		print "Too much memory being eaten up.  Closing and re-opening $newfolder.\n";
+		$mgr->close($destination);
+		print "$destination closed.\n";
+		$destination = $mgr->open( 'folder' => $newfolder, 'access' => 'rw' ) or die("$newfolder: Unable to open: $!\n");
+		print "$destination opened.\n\n";
+		$msg_count = 0;
+		next MESSAGE;
+	}
+	print "\n";
+	$msg_count++;
+}
+$mgr->close($inbox);
+
+# Close the new folder.
+$mgr->close($destination);
